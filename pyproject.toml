@@ -1,15 +1,55 @@
 [project]
 name = "gbp-notifications"
-version = "0.1.0"
-description = ""
+dynamic = ["version"]
+description = "Get notifications for GBP events"
 authors = [
     {name = "Albert Hopkins", email = "marduk@letterboxes.org"},
 ]
-dependencies = []
+dependencies = [
+    "gentoo-build-publisher @ git+https://github.com/enku/gentoo-build-publisher.git",
+    "Jinja2>=3.1.2",
+]
 requires-python = ">=3.11"
 readme = "README.md"
 license = {text = "GPL-3+"}
 
+[project.entry-points."gbp_notifications.notification_method"]
+email = "gbp_notifications.methods.email:EmailMethod"
+
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
+
+[tool.pdm]
+version = { source = "scm" }
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "pylint>=3.0.3",
+    "pylint-django>=2.5.5",
+    "typos>=1.16.24",
+    "coverage[toml]>=7.3.2",
+    "mypy>=1.7.1",
+    "django-stubs>=4.2.7",
+]
+
+[tool.coverage.run]
+source = ["gbp_notifications"]
+omit = ["src/gentoo_build_publisher/migrations/*"]
+
+[tool.mypy]
+plugins =["mypy_django_plugin.main"]
+exclude = ["/migrations/"]
+files = ["src/gbp_notifications"]
+mypy_path = ["tests"]
+
+[tool.django-stubs]
+django_settings_module = "settings"
+strict = true
+
+[tool.pylint.master]
+load-plugins = "pylint_django,pylint.extensions.bad_builtin"
+django-settings-module = "settings"
+init-hook = "import sys; sys.path.insert(0, 'tests')"
+bad-functions = "print"
+ignore = ["/migrations/"]
