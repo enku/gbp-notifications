@@ -8,7 +8,7 @@ from gbp_notifications import Event, Subscription
 from gbp_notifications.settings import Settings
 
 
-def postpull_handler(*, build: Build, **kwargs: t.Any) -> None:
+def handler(*, build: Build, **kwargs: t.Any) -> None:
     """Signal handler for post-pulls"""
     event = Event(
         name="build_pulled", machine=build.machine, data={"build": build, **kwargs}
@@ -21,4 +21,4 @@ def postpull_handler(*, build: Build, **kwargs: t.Any) -> None:
             method(settings).send(event, recipient)
 
 
-dispatcher.bind(postpull=postpull_handler)
+dispatcher.bind(postpull=handler)
