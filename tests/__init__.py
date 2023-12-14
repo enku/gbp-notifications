@@ -5,8 +5,6 @@ from unittest import mock
 
 from django.test import TestCase as DjangoTestCase
 
-from gbp_notifications import Subscription
-
 
 class TestCase(DjangoTestCase):
     """Test case for gbp-notifications"""
