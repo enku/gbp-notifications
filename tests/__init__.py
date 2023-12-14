@@ -1,8 +1,11 @@
+# pylint: disable=missing-docstring
 import os
+import tempfile
 from unittest import mock
 
-import tempfile
 from django.test import TestCase as DjangoTestCase
+
+from gbp_notifications import Subscription
 
 
 class TestCase(DjangoTestCase):
@@ -11,7 +14,8 @@ class TestCase(DjangoTestCase):
     def setUp(self) -> None:
         super().setUp()
 
-        tmpdir = tempfile.TemporaryDirectory()
+        Subscription._registry.clear()  # pylint: disable=protected-access
+        tmpdir = tempfile.TemporaryDirectory()  # pylint: disable=consider-using-with
         self.addCleanup(tmpdir.cleanup)
 
         env = {

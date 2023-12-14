@@ -42,7 +42,6 @@ only email is implemented.
 
 # ToDo
 - docs
-- tests
 - wildcard support for subscriptions
 - more events
 - more notification methods

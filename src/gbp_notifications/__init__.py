@@ -12,7 +12,9 @@ class Subscription:
     """Connection between an event and recipients"""
 
     event: Event
-    subscribers: set[Recipient] = dataclasses.field(default_factory=set, compare=False)
+    subscribers: tuple[Recipient, ...] = dataclasses.field(
+        default_factory=tuple, compare=False, hash=False
+    )
     _registry: t.ClassVar = {}
 
     def __post_init__(self) -> None:
@@ -28,6 +30,8 @@ class Subscription:
         cls, string: str, recipients: t.Iterable[Recipient]
     ) -> tuple[t.Self, ...]:
         """Given the env-variable-like string, return a tuple of subscriptions"""
+        # The string looks like this
+        # "babette.build_pulled=albert lighthous.build_pulled=user2"
         subscriptions: set[t.Self] = set()
 
         for item in string.split():
@@ -42,12 +46,17 @@ class Subscription:
             recipient_names = names.split(",")
 
             event = Event(name=event_name, machine=machine)
-            subscription = cls.for_event(event)
-            subscriptions.add(subscription)
+            subscribers = set()
 
             for recipient in recipients:
                 if recipient.name in recipient_names:
-                    subscription.subscribers.add(recipient)
+                    subscribers.add(recipient)
+            subscriptions.add(
+                cls(
+                    event=event,
+                    subscribers=tuple(sorted(subscribers, key=lambda s: s.name)),
+                )
+            )
 
         return tuple(
             sorted(subscriptions, key=lambda s: (s.event.name, s.event.machine))
