@@ -1,5 +1,6 @@
 """Settings for gbp-notifications"""
 import dataclasses as dc
+import tomllib
 import typing as t
 from pathlib import Path
 
@@ -15,8 +16,12 @@ class Settings(BaseSettings):
     # pylint: disable=invalid-name,too-many-instance-attributes
     env_prefix: t.ClassVar = "GBP_NOTIFICATIONS_"
 
-    RECIPIENTS: tuple[Recipient, ...]
-    SUBSCRIPTIONS: dict[Event, Subscription]
+    RECIPIENTS: tuple[Recipient, ...] = dc.field(default_factory=tuple)
+    SUBSCRIPTIONS: dict[Event, Subscription] = dc.field(default_factory=dict)
+
+    # If initializing with .from_dict() (and .from_environ()) use this (TOML) file to
+    # configure RECIPIENTS and SUBSCRIPTIONS
+    CONFIG_FILE: str = ""
 
     EMAIL_FROM: str = ""
     EMAIL_SMTP_HOST: str = ""
@@ -36,6 +41,17 @@ class Settings(BaseSettings):
             data[f"{prefix}SUBSCRIPTIONS"] = Subscription.from_string(
                 subscriptions, data.get(f"{prefix}RECIPIENTS", ())
             )
+
+        if config_file := data.get(f"{prefix}CONFIG_FILE"):
+            with Path(config_file).open("rb") as fp:
+                config = tomllib.load(fp)
+
+            recipients = Recipient.from_map(config.get("recipients", {}))
+            subscriptions = Subscription.from_map(
+                config.get("subscriptions", {}), recipients
+            )
+            data[f"{prefix}RECIPIENTS"] = recipients
+            data[f"{prefix}SUBSCRIPTIONS"] = subscriptions
 
         if data != data_dict:
             return cls.from_dict(prefix, data)

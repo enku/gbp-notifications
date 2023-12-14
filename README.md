@@ -40,9 +40,46 @@ The last lines are settings for the email notification method.
 gbp-notifications has support for multiple notification methods but currently
 only email is implemented.
 
+# Config file for Recipients and Subscriptions
+
+Alternatively you can use a toml-formatted config file for recipients and subscriptions.
+For that instead define the `GBP_NOTIFICATIONS_CONFIG` environment variable that points
+to the path of the config file, e.g.
+
+```sh
+GBP_NOTIFICATIONS_CONFIG="/etc/gbp-subcribers.toml"
+```
+
+Then in your config file, the above configuration would look like this:
+
+```toml
+[recipients]
+albert = {email = "marduk@host.invalid"}
+
+[subscriptions]
+babette = {build_pulled = ["albert"]}
+```
+
+A more sophisticated example might be:
+
+```toml
+[recipients]
+# Albert and Bob are recipients with email addresses.
+albert = {email = "marduk@host.invalid"}
+bob = {email = "bob@host.invalid"}
+
+[subscriptions]
+# Both Albert and Bob want to be notified when builds for babette are pulled
+babette = {build_pulled = ["albert", "bob"]}
+
+# For lighthouse Albert only wants to be notified when builds are pulled. Bob only wants
+# To be notified when builds are published.
+lighthouse = {build_pulled = ["albert"], build_published = ["bob"]}
+```
+
+
 # ToDo
 - docs
 - wildcard support for subscriptions
 - more events
 - more notification methods
-- read recipients & subscribers from a file

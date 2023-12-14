@@ -46,6 +46,35 @@ class Subscription:
 
         return subscriptions
 
+    @classmethod
+    def from_map(
+        cls: type[t.Self],
+        data: t.Mapping[str, t.Mapping[str, str]],
+        recipients: t.Iterable[Recipient],
+    ) -> dict[Event, t.Self]:
+        """Given the map return a dict of Event -> Subscription
+
+        The map looks like this:
+
+            {'babette': {'foo': ['marduk'], 'pull': ['marduk', 'bob']}}
+        """
+        subscriptions: dict[Event, t.Self] = {}
+
+        for machine, attrs in data.items():
+            for event_name, recipient_names in attrs.items():
+                event = Event(name=event_name, machine=machine)
+                subscribers = set(
+                    recipient
+                    for recipient in recipients
+                    if recipient.name in recipient_names
+                )
+                subscriptions[event] = cls(
+                    event=event,
+                    subscribers=tuple(sorted(subscribers, key=lambda s: s.name)),
+                )
+
+        return subscriptions
+
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class Event:
@@ -111,5 +140,26 @@ class Recipient:
                 attr_dict[key] = value
 
             recipients.add(cls(**attr_dict, name=name))
+
+        return tuple(sorted(recipients, key=lambda r: r.name))
+
+    @classmethod
+    def from_map(
+        cls: type[t.Self], data: t.Mapping[str, t.Mapping[str, str]]
+    ) -> tuple[t.Self, ...]:
+        """Given the map return a tuple of Recipients
+
+        The map looks like this:
+
+            {
+                'bob': {'email': 'bob@host.invalid'},
+                'marduk': {'email': 'marduk@host.invalid'},
+            }
+        """
+        recipients: set[t.Self] = set()
+
+        for name, attrs in data.items():
+            recipient = cls(name=name, **attrs)
+            recipients.add(recipient)
 
         return tuple(sorted(recipients, key=lambda r: r.name))
