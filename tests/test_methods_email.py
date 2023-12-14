@@ -42,7 +42,7 @@ class GenerateEmailContentTests(TestCase):
             "build": Build(machine="babette", build_id="666"),
             "gbp_metadata": gbp_metadata,
         }
-        event = Event(name="build_pull", machine="babette", data=data)
+        event = Event(name="build_pulled", machine="babette", data=data)
         recipient = Recipient(name="bob", email="bob@host.invalid")
 
         result = email.generate_email_content(event, recipient)

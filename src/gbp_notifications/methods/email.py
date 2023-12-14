@@ -1,7 +1,9 @@
 """Email NotificationMethod"""
+import logging
 import typing as t
 from email.message import EmailMessage
 
+import jinja2.exceptions
 from gentoo_build_publisher.common import GBPMetadata
 from gentoo_build_publisher.settings import Settings as BPSettings
 from gentoo_build_publisher.worker import Worker
@@ -9,6 +11,10 @@ from jinja2 import Environment, PackageLoader, Template, select_autoescape
 
 from gbp_notifications import Event, Recipient
 from gbp_notifications.settings import Settings
+
+logger = logging.getLogger(__name__)
+
+Composer: t.TypeAlias = t.Callable[[Event, Recipient], EmailMessage]
 
 
 def load_template(name: str) -> Template:
@@ -36,27 +42,33 @@ class EmailMethod:  # pylint: disable=too-few-public-methods
 
     def send(self, event: Event, recipient: Recipient) -> None:
         """Notify the given Recipient of the given Event"""
-        settings = self.settings
-
-        msg = EmailMessage()
-        msg["Subject"] = "GBP: build pulled"
-        msg["From"] = settings.EMAIL_FROM
-        to = recipient.name.replace("_", " ")
-        msg["To"] = f'"{to}" <{recipient.email}>'
-        msg.set_content(generate_email_content(event, recipient))
+        try:
+            msg = self.compose(event, recipient)
+        except jinja2.exceptions.TemplateNotFound:
+            # We don't have an email template for this event. Oh well..
+            logger.warning("No template found for event: %s", event.name)
+            return
 
         worker = Worker(BPSettings.from_environ())
         worker.run(sendmail, msg["From"], [msg["To"]], msg.as_string())
 
+    def compose(self, event: Event, recipient: Recipient) -> EmailMessage:
+        """Compose message for the given event"""
+        msg = EmailMessage()
+        msg["Subject"] = f"GBP: {event.name}"
+        msg["From"] = self.settings.EMAIL_FROM
+        msg["To"] = f'"{recipient.name.replace("_", " ")}" <{recipient.email}>'
+        msg.set_content(generate_email_content(event, recipient))
 
-def sendmail(from_addr: str, to_addrs: list[str], msg) -> None:
+        return msg
+
+
+def sendmail(from_addr: str, to_addrs: list[str], msg: str) -> None:
     """Worker function to sent the email message"""
-    # pylint: disable=reimported,import-outside-toplevel,redefined-outer-name
-    import logging
+    # pylint: disable=reimported,import-outside-toplevel,redefined-outer-name,import-self
     import smtplib
 
-    logger = logging.getLogger(__name__)
-
+    from gbp_notifications.methods.email import logger
     from gbp_notifications.settings import Settings
 
     config = Settings.from_environ()
@@ -76,7 +88,8 @@ def generate_email_content(event: Event, recipient: Recipient) -> str:
     if gbp_meta:
         packages = gbp_meta.packages.built
 
-    template = load_template("pulled.eml")
+    template_name = f"email_{event.name}.eml"
+    template = load_template(template_name)
     context = {"packages": packages, "recipient": recipient, "event": event.data}
 
     return render_template(template, context)
