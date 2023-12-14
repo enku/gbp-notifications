@@ -45,5 +45,4 @@ only email is implemented.
 - wildcard support for subscriptions
 - more events
 - more notification methods
-- read password from a file
 - read recipients & subscribers from a file

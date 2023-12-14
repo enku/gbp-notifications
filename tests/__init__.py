@@ -14,6 +14,7 @@ class TestCase(DjangoTestCase):
 
         tmpdir = tempfile.TemporaryDirectory()  # pylint: disable=consider-using-with
         self.addCleanup(tmpdir.cleanup)
+        self.tmpdir = tmpdir.name
 
         env = {
             "GBP_NOTIFICATIONS_RECIPIENTS": "albert:email=marduk@host.invalid",
