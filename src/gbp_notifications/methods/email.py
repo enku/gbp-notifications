@@ -12,7 +12,7 @@ from gbp_notifications.settings import Settings
 
 
 def load_template(name: str) -> Template:
-    """Load the teamplate with the given name"""
+    """Load the template with the given name"""
     loader = PackageLoader("gbp_notifications")
     env = Environment(loader=loader, autoescape=select_autoescape(["html", "xml"]))
     return env.get_template(name)

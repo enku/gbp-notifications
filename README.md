@@ -3,7 +3,7 @@
 gbp-notifications is a plugin for [Gentoo Build
 Publisher](https://github.com/enku/gentoo-build-publisher) that can send
 notifications when various events occur in a GBP instance. This is to scratch
-my personal itch where i want to recieve emails when certain machines have new
+my personal itch where i want to receive emails when certain machines have new
 builds pulled.
 
 More to come...
@@ -37,7 +37,7 @@ will be notified. Since `"albert"` has one notification method defined (email)
 that recipient will be notified via email.
 
 The last lines are settings for the email notification method.
-gbp-notifications has support for multiple notification methods but currenly
+gbp-notifications has support for multiple notification methods but currently
 only email is implemented.
 
 # ToDo
