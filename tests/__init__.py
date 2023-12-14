@@ -14,7 +14,6 @@ class TestCase(DjangoTestCase):
     def setUp(self) -> None:
         super().setUp()
 
-        Subscription._registry.clear()  # pylint: disable=protected-access
         tmpdir = tempfile.TemporaryDirectory()  # pylint: disable=consider-using-with
         self.addCleanup(tmpdir.cleanup)
 

@@ -7,22 +7,6 @@ from . import TestCase
 
 
 class SubscriptionTests(TestCase):
-    def test_registry(self) -> None:
-        event1 = Event(name="pull_build", machine="babette")
-        event2 = Event(name="pull_build", machine="lighthouse")
-        sub1 = Subscription(event=event1)
-        sub2 = Subscription(event=event2)
-
-        # pylint: disable=protected-access
-        self.assertEqual(Subscription._registry, {event1: sub1, event2: sub2})
-
-    def test_for_event(self) -> None:
-        event1 = Event(name="pull_build", machine="babette")
-        Event(name="pull_build", machine="lighthouse")
-        subscription = Subscription(event=event1)
-
-        self.assertEqual(Subscription.for_event(event1), subscription)
-
     def test_from_string(self) -> None:
         r1 = Recipient(name="foo")
         r2 = Recipient(name="bar")
@@ -30,16 +14,12 @@ class SubscriptionTests(TestCase):
 
         result = Subscription.from_string(s, [r1, r2])
 
-        expected = (
-            Subscription(
-                event=Event(name="build_pulled", machine="babette"),
-                subscribers=(Recipient(name="foo", email=None),),
-            ),
-            Subscription(
-                event=Event(name="died", machine="lighthouse"),
-                subscribers=(Recipient(name="bar", email=None),),
-            ),
-        )
+        ev1 = Event(name="build_pulled", machine="babette")
+        ev2 = Event(name="died", machine="lighthouse")
+        expected = {
+            ev1: Subscription(event=ev1, subscribers=()),
+            ev2: Subscription(event=ev2, subscribers=()),
+        }
         self.assertEqual(result, expected)
 
 

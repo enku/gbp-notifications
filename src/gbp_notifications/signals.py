@@ -4,7 +4,7 @@ import typing as t
 from gentoo_build_publisher.common import Build
 from gentoo_build_publisher.signals import dispatcher
 
-from gbp_notifications import Event, Subscription
+from gbp_notifications import Event
 from gbp_notifications.settings import Settings
 
 
@@ -14,11 +14,12 @@ def handler(*, build: Build, **kwargs: t.Any) -> None:
         name="build_pulled", machine=build.machine, data={"build": build, **kwargs}
     )
     settings = Settings.from_environ()
-    subscription = Subscription.for_event(event)
+    subscriptions = settings.SUBSCRIPTIONS
 
-    for recipient in subscription.subscribers:
-        for method in recipient.methods:
-            method(settings).send(event, recipient)
+    if subscription := subscriptions.get(event, None):
+        for recipient in subscription.subscribers:
+            for method in recipient.methods:
+                method(settings).send(event, recipient)
 
 
 dispatcher.bind(postpull=handler)

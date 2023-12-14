@@ -4,7 +4,7 @@ import typing as t
 
 from gentoo_build_publisher.settings import BaseSettings
 
-from . import Recipient, Subscription
+from . import Event, Recipient, Subscription
 
 
 @dc.dataclass(frozen=True, kw_only=True)
@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     env_prefix: t.ClassVar = "GBP_NOTIFICATIONS_"
 
     RECIPIENTS: tuple[Recipient, ...]
-    SUBSCRIPTIONS: tuple[Subscription, ...]
+    SUBSCRIPTIONS: dict[Event, Subscription]
 
     EMAIL_FROM: str = ""
     EMAIL_SMTP_HOST: str = ""

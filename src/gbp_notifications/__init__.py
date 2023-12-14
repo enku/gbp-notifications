@@ -15,52 +15,36 @@ class Subscription:
     subscribers: tuple[Recipient, ...] = dataclasses.field(
         default_factory=tuple, compare=False, hash=False
     )
-    _registry: t.ClassVar = {}
-
-    def __post_init__(self) -> None:
-        self._registry[self.event] = self
-
-    @classmethod
-    def for_event(cls, event: Event) -> t.Self:
-        """Return the subscription for the given event"""
-        return cls._registry.get(event) or cls(event=event)
 
     @classmethod
     def from_string(
         cls, string: str, recipients: t.Iterable[Recipient]
-    ) -> tuple[t.Self, ...]:
+    ) -> dict[Event, t.Self]:
         """Given the env-variable-like string, return a tuple of subscriptions"""
         # The string looks like this
         # "babette.build_pulled=albert lighthous.build_pulled=user2"
-        subscriptions: set[t.Self] = set()
+        subscriptions: dict[Event, t.Self] = {}
 
         for item in string.split():
             machine_event, eq, names = item.partition("=")
             if not eq:
                 raise TypeError(f"Invalid item in string {item!r}")
 
-            machine, dot, event_name = machine_event.partition(".")
-            if not dot:
-                raise TypeError(f"Invalid item in string {item!r}")
-
+            event = Event.from_string(machine_event)
             recipient_names = names.split(",")
 
-            event = Event(name=event_name, machine=machine)
             subscribers = set()
 
             for recipient in recipients:
                 if recipient.name in recipient_names:
                     subscribers.add(recipient)
-            subscriptions.add(
-                cls(
-                    event=event,
-                    subscribers=tuple(sorted(subscribers, key=lambda s: s.name)),
-                )
+
+            subscriptions[event] = cls(
+                event=event,
+                subscribers=tuple(sorted(subscribers, key=lambda s: s.name)),
             )
 
-        return tuple(
-            sorted(subscriptions, key=lambda s: (s.event.name, s.event.machine))
-        )
+        return subscriptions
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
@@ -72,6 +56,19 @@ class Event:
     data: dict[str, t.Any] = dataclasses.field(
         hash=False, compare=False, default_factory=dict, repr=False
     )
+
+    @classmethod
+    def from_string(cls, s: str) -> t.Self:
+        """Create an Event from the given string
+
+        String should look like "babette.build_pulled"
+        """
+        machine, dot, name = s.partition(".")
+
+        if not dot:
+            raise TypeError(f"Invalid string for Event: {s!r}")
+
+        return cls(name=name, machine=machine)
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
