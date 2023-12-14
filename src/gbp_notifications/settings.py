@@ -27,23 +27,19 @@ class Settings(BaseSettings):
 
     @classmethod
     def from_dict(cls, prefix: str, data_dict: dict[str, t.Any]) -> t.Self:
-        config = super().from_dict(prefix, data_dict)
+        data = data_dict.copy()
 
-        # pylint: disable=no-member
-        if isinstance(config.RECIPIENTS, str):
-            config = dc.replace(
-                config, RECIPIENTS=Recipient.from_string(config.RECIPIENTS)
+        if isinstance(recipients := data_dict.get(f"{prefix}RECIPIENTS"), str):
+            data[f"{prefix}RECIPIENTS"] = Recipient.from_string(recipients)
+
+        if isinstance(subscriptions := data_dict.get(f"{prefix}SUBSCRIPTIONS"), str):
+            data[f"{prefix}SUBSCRIPTIONS"] = Subscription.from_string(
+                subscriptions, data.get(f"{prefix}RECIPIENTS", ())
             )
 
-        if isinstance(config.SUBSCRIPTIONS, str):
-            config = dc.replace(
-                config,
-                SUBSCRIPTIONS=Subscription.from_string(
-                    config.SUBSCRIPTIONS, config.RECIPIENTS
-                ),
-            )
-
-        return config
+        if data != data_dict:
+            return cls.from_dict(prefix, data)
+        return super().from_dict(prefix, data)
 
     @property
     def email_password(self) -> str:
