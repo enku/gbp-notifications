@@ -49,12 +49,12 @@ only email is implemented.
 
 # Config file for Recipients and Subscriptions
 
-Alternatively you can use a toml-formatted config file for recipients and subscriptions.
-For that instead define the `GBP_NOTIFICATIONS_CONFIG` environment variable that points
-to the path of the config file, e.g.
+Alternatively you can use a toml-formatted config file for recipients and
+subscriptions.  For that instead define the `GBP_NOTIFICATIONS_CONFIG_FILE`
+environment variable that points to the path of the config file, e.g.
 
 ```sh
-GBP_NOTIFICATIONS_CONFIG="/etc/gbp-subcribers.toml"
+GBP_NOTIFICATIONS_CONFIG_FILE="/etc/gbp-subcribers.toml"
 ```
 
 Then in your config file, the above configuration would look like this:
