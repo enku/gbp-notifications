@@ -25,7 +25,7 @@ def handle(event_name: str) -> SignalHandler:
         subscriptions = settings.SUBSCRIPTIONS
         recipients: set[Recipient] = set()
 
-        for event in [*expand_event(event), event]:
+        for event in [*wildcard_events(event), event]:
             if subscription := subscriptions.get(event, None):
                 recipients.update(subscription.subscribers)
 
@@ -37,7 +37,7 @@ def handle(event_name: str) -> SignalHandler:
     return handler
 
 
-def expand_event(event: Event) -> list[Event]:
+def wildcard_events(event: Event) -> list[Event]:
     """Return the given event's "wildcard" events
 
     The `data` field is not copied into the wildcard events
