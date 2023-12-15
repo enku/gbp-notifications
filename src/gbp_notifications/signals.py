@@ -38,3 +38,5 @@ def handle(event_name: str) -> SignalHandler:
 # at the module level so they don't fall away
 build_pulled_handler = handle("build_pulled")
 dispatcher.bind(postpull=build_pulled_handler)
+build_published_handler = handle("build_published")
+dispatcher.bind(published=build_published_handler)

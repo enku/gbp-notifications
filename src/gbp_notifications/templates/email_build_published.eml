@@ -1,0 +1,6 @@
+Just letting you know about the recent event for {{event.build.machine}}.
+
+Build {{event.build.build_id}} has been published on GBP.
+
+Thanks,
+Gentoo Build Publisher

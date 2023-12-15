@@ -81,5 +81,4 @@ lighthouse = {build_pulled = ["albert"], build_published = ["bob"]}
 # ToDo
 - docs
 - wildcard support for subscriptions
-- more events
 - more notification methods
