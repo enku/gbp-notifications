@@ -11,7 +11,8 @@ from gbp_notifications.settings import Settings
 class SignalHandler(t.Protocol):  # pylint: disable=too-few-public-methods
     """Signal handler function"""
 
-    def __call__(self, *, build: Build, **kwargs: t.Any) -> None:
+    @staticmethod
+    def __call__(*, build: Build, **kwargs: t.Any) -> None:
         """We handle signals"""
 
 
