@@ -4,7 +4,7 @@ import typing as t
 from gentoo_build_publisher.common import Build
 from gentoo_build_publisher.signals import dispatcher
 
-from gbp_notifications import Event
+from gbp_notifications import Event, Recipient
 from gbp_notifications.settings import Settings
 
 
@@ -23,12 +23,11 @@ def handle(event_name: str) -> SignalHandler:
         event = Event(name=event_name, machine=build.machine, data=data)
         settings = Settings.from_environ()
         subscriptions = settings.SUBSCRIPTIONS
-        recipients = set()
+        recipients: set[Recipient] = set()
 
         for event in [*expand_event(event), event]:
             if subscription := subscriptions.get(event, None):
-                for recipient in subscription.subscribers:
-                    recipients.add(recipient)
+                recipients.update(subscription.subscribers)
 
         for recipient in recipients:
             for method in recipient.methods:
