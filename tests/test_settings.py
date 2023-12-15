@@ -54,8 +54,8 @@ babette = {pull = ["marduk", "bob"], foo = ["marduk"]}
         foo_event = Event(name="foo", machine="babette")
 
         expected_subs = {
-            pull_event: Subscription(event=pull_event, subscribers=(bob, marduk)),
-            foo_event: Subscription(event=foo_event, subscribers=(marduk,)),
+            pull_event: Subscription(subscribers=(bob, marduk)),
+            foo_event: Subscription(subscribers=(marduk,)),
         }
         self.assertEqual(settings.SUBSCRIPTIONS, expected_subs)
 

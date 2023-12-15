@@ -11,7 +11,6 @@ from gbp_notifications.methods import NotificationMethod, get_method
 class Subscription:
     """Connection between an event and recipients"""
 
-    event: Event
     subscribers: tuple[Recipient, ...] = dataclasses.field(
         default_factory=tuple, compare=False, hash=False
     )
@@ -40,7 +39,6 @@ class Subscription:
                     subscribers.add(recipient)
 
             subscriptions[event] = cls(
-                event=event,
                 subscribers=tuple(sorted(subscribers, key=lambda s: s.name)),
             )
 
@@ -69,7 +67,6 @@ class Subscription:
                     if recipient.name in recipient_names
                 )
                 subscriptions[event] = cls(
-                    event=event,
                     subscribers=tuple(sorted(subscribers, key=lambda s: s.name)),
                 )
 
