@@ -19,19 +19,35 @@ def handle(event_name: str) -> SignalHandler:
     """Signal handler factory"""
 
     def handler(*, build: Build, **kwargs: t.Any) -> None:
-        event = Event(
-            name=event_name, machine=build.machine, data={"build": build, **kwargs}
-        )
+        data = {"build": build, **kwargs}
+        event = Event(name=event_name, machine=build.machine, data=data)
         settings = Settings.from_environ()
         subscriptions = settings.SUBSCRIPTIONS
+        recipients = set()
 
-        if subscription := subscriptions.get(event, None):
-            for recipient in subscription.subscribers:
-                for method in recipient.methods:
-                    method(settings).send(event, recipient)
+        for event in [*expand_event(event), event]:
+            if subscription := subscriptions.get(event, None):
+                for recipient in subscription.subscribers:
+                    recipients.add(recipient)
+
+        for recipient in recipients:
+            for method in recipient.methods:
+                method(settings).send(event, recipient)
 
     handler.__doc__ = f"SignalHandler for {event_name!r}"
     return handler
+
+
+def expand_event(event: Event) -> list[Event]:
+    """Return the given event's "wildcard" events
+
+    The `data` field is not copied into the wildcard events
+    """
+    return [
+        Event(name="*", machine="*"),
+        Event(name="*", machine=event.machine),
+        Event(name=event.name, machine="*"),
+    ]
 
 
 # Note handlers are kept as weak references in the dispatcher, so we need to keep them

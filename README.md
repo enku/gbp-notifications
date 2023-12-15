@@ -36,6 +36,13 @@ receives a `build_pulled` event the the recipient with the name `"albert"`
 will be notified. Since `"albert"` has one notification method defined (email)
 that recipient will be notified via email.
 
+The wildcard is supported for machines and events, on subscriptions. So
+`*.build_pulled=albert` means "send a notification to `albert` when any machine receives
+a `build_pulled` event" and `babette.*=albert` means "send a notification to `albert`
+when any event is receive for the machine `babette`.  The double-wildcard, `*.*=albert`
+does what you'd think.  Notifications are only sent once per recipient (per notification
+method).
+
 The last lines are settings for the email notification method.
 gbp-notifications has support for multiple notification methods but currently
 only email is implemented.
@@ -80,5 +87,4 @@ lighthouse = {build_pulled = ["albert"], build_published = ["bob"]}
 
 # ToDo
 - docs
-- wildcard support for subscriptions
 - more notification methods
