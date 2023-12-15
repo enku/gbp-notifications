@@ -41,7 +41,7 @@ WILDCARD_DOUBLE = {
 @mock.patch("gbp_notifications.methods.email.EmailMethod")
 class HandlerTests(TestCase):
     @mock.patch.dict(os.environ, WILDCARD_MACHINE, clear=True)
-    def test_wildcard_machine(self, mock_get_method) -> None:
+    def test_wildcard_machine(self, mock_get_method: mock.Mock) -> None:
         build = Build(machine="babette", build_id="934")
         event = Event(name="build_published", machine="babette")
         recipient = Recipient(name="marduk", email="marduk@host.invalid")
@@ -52,7 +52,7 @@ class HandlerTests(TestCase):
         mock_get_method.return_value.send.assert_called_once_with(event, recipient)
 
     @mock.patch.dict(os.environ, WILDCARD_NAME, clear=True)
-    def test_wildcard_name(self, mock_get_method) -> None:
+    def test_wildcard_name(self, mock_get_method: mock.Mock) -> None:
         build = Build(machine="babette", build_id="934")
         event = Event(name="build_published", machine="babette")
         recipient = Recipient(name="marduk", email="marduk@host.invalid")
@@ -63,7 +63,7 @@ class HandlerTests(TestCase):
         mock_get_method.return_value.send.assert_called_once_with(event, recipient)
 
     @mock.patch.dict(os.environ, WILDCARD_BOTH, clear=True)
-    def test_wildcard_machine_and_name(self, mock_get_method) -> None:
+    def test_wildcard_machine_and_name(self, mock_get_method: mock.Mock) -> None:
         # Multiple matches should only send one message per recipient
         build = Build(machine="babette", build_id="934")
         event = Event(name="build_published", machine="babette")
@@ -75,7 +75,7 @@ class HandlerTests(TestCase):
         mock_get_method.return_value.send.assert_called_once_with(event, recipient)
 
     @mock.patch.dict(os.environ, WILDCARD_DOUBLE, clear=True)
-    def test_wildcard_double(self, mock_get_method) -> None:
+    def test_wildcard_double(self, mock_get_method: mock.Mock) -> None:
         # Double wildcard is sent exactly once
         build = Build(machine="babette", build_id="934")
         event = Event(name="build_published", machine="babette")
