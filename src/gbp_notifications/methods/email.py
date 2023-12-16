@@ -14,8 +14,6 @@ from gbp_notifications.settings import Settings
 
 logger = logging.getLogger(__name__)
 
-Composer: t.TypeAlias = t.Callable[[Event, Recipient], EmailMessage]
-
 
 def load_template(name: str) -> Template:
     """Load the template with the given name"""
