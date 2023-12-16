@@ -20,7 +20,7 @@ class SendTests(TestCase):
         machine="babette",
         data={"build": Build(machine="babette", build_id="25")},
     )
-    recipient = Recipient(name="marduk", email="marduk@host.invalid")
+    recipient = Recipient(name="marduk", config={"email": "marduk@host.invalid"})
     settings = Settings(
         RECIPIENTS=(recipient,),
         SUBSCRIPTIONS={event: Subscription(subscribers=(recipient,))},
@@ -93,7 +93,7 @@ class GenerateEmailContentTests(TestCase):
             "gbp_metadata": gbp_metadata,
         }
         event = Event(name="build_pulled", machine="babette", data=data)
-        recipient = Recipient(name="bob", email="bob@host.invalid")
+        recipient = Recipient(name="bob", config={"email": "bob@host.invalid"})
 
         result = email.generate_email_content(event, recipient)
 

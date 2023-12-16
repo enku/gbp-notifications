@@ -28,7 +28,7 @@ class RecipientTests(TestCase):
         recipient = Recipient(name="foo")
         self.assertEqual(recipient.methods, ())
 
-        recipient = Recipient(name="foo", email="foo@host.invalid")
+        recipient = Recipient(name="foo", config={"email": "foo@host.invalid"})
         self.assertEqual(recipient.methods, (EmailMethod,))
 
     def test_from_string(self) -> None:
@@ -37,8 +37,8 @@ class RecipientTests(TestCase):
         result = Recipient.from_string(s)
 
         expected = (
-            Recipient(name="albert", email="marduk@host.invalid"),
-            Recipient(name="bob", email="bob@host.invalid"),
+            Recipient(name="albert", config={"email": "marduk@host.invalid"}),
+            Recipient(name="bob", config={"email": "bob@host.invalid"}),
         )
 
         self.assertEqual(result, expected)

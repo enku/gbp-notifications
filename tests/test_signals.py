@@ -28,7 +28,7 @@ class HandlerTests(TestCase):
     def test_wildcard_machine(self, mock_get_method: mock.Mock) -> None:
         build = Build(machine="babette", build_id="934")
         event = Event(name="build_published", machine="babette")
-        recipient = Recipient(name="marduk", email="marduk@host.invalid")
+        recipient = Recipient(name="marduk", config={"email": "marduk@host.invalid"})
 
         get_method.cache_clear()
         dispatcher.emit("published", build=build)
@@ -39,7 +39,7 @@ class HandlerTests(TestCase):
     def test_wildcard_name(self, mock_get_method: mock.Mock) -> None:
         build = Build(machine="babette", build_id="934")
         event = Event(name="build_published", machine="babette")
-        recipient = Recipient(name="marduk", email="marduk@host.invalid")
+        recipient = Recipient(name="marduk", config={"email": "marduk@host.invalid"})
 
         get_method.cache_clear()
         dispatcher.emit("published", build=build)
@@ -53,7 +53,7 @@ class HandlerTests(TestCase):
         # Multiple matches should only send one message per recipient
         build = Build(machine="babette", build_id="934")
         event = Event(name="build_published", machine="babette")
-        recipient = Recipient(name="marduk", email="marduk@host.invalid")
+        recipient = Recipient(name="marduk", config={"email": "marduk@host.invalid"})
 
         get_method.cache_clear()
         dispatcher.emit("published", build=build)
@@ -65,7 +65,7 @@ class HandlerTests(TestCase):
         # Double wildcard is sent exactly once
         build = Build(machine="babette", build_id="934")
         event = Event(name="build_published", machine="babette")
-        recipient = Recipient(name="marduk", email="marduk@host.invalid")
+        recipient = Recipient(name="marduk", config={"email": "marduk@host.invalid"})
 
         get_method.cache_clear()
         dispatcher.emit("published", build=build)

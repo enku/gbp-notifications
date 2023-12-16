@@ -102,21 +102,14 @@ class Recipient:
     """Recipient of a notification"""
 
     name: str
-    email: str | None = None
+    config: dict[str, str] = dataclasses.field(
+        default_factory=dict, hash=False, compare=False
+    )
 
     @property
     def methods(self) -> tuple[type[NotificationMethod], ...]:
         """NotificationMethods this Recipient supports"""
-        my_methods: set[type[NotificationMethod]] = set()
-
-        for field in dataclasses.fields(self):
-            if field.name == "name" or getattr(self, field.name, None) is None:
-                continue
-
-            recipient_method = get_method(field.name)
-            my_methods.add(recipient_method)
-
-        return tuple(my_methods)
+        return tuple(get_method(name) for name in self.config)
 
     @classmethod
     def from_string(cls: type[t.Self], string: str) -> tuple[t.Self, ...]:
@@ -136,7 +129,7 @@ class Recipient:
 
                 attr_dict[key] = value
 
-            recipients.add(cls(**attr_dict, name=name))
+            recipients.add(cls(name=name, config=attr_dict))
 
         return tuple(sorted(recipients, key=lambda r: r.name))
 
@@ -156,7 +149,7 @@ class Recipient:
         recipients: set[t.Self] = set()
 
         for name, attrs in data.items():
-            recipient = cls(name=name, **attrs)
+            recipient = cls(name=name, config=dict(attrs))
             recipients.add(recipient)
 
         return tuple(sorted(recipients, key=lambda r: r.name))

@@ -48,8 +48,8 @@ babette = {pull = ["marduk", "bob"], foo = ["marduk"]}
         config_file.write_text(toml, encoding="UTF-8")
         settings = Settings.from_dict("", {"CONFIG_FILE": str(config_file)})
 
-        bob = Recipient(name="bob", email="bob@host.invalid")
-        marduk = Recipient(name="marduk", email="marduk@host.invalid")
+        bob = Recipient(name="bob", config={"email": "bob@host.invalid"})
+        marduk = Recipient(name="marduk", config={"email": "marduk@host.invalid"})
         pull_event = Event(name="pull", machine="babette")
         foo_event = Event(name="foo", machine="babette")
 

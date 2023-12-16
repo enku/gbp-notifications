@@ -55,7 +55,7 @@ class EmailMethod:  # pylint: disable=too-few-public-methods
         msg = EmailMessage()
         msg["Subject"] = f"GBP: {event.name}"
         msg["From"] = self.settings.EMAIL_FROM
-        msg["To"] = f'"{recipient.name.replace("_", " ")}" <{recipient.email}>'
+        msg["To"] = f'{recipient.name.replace("_", " ")} <{recipient.config["email"]}>'
         msg.set_content(generate_email_content(event, recipient))
 
         return msg
