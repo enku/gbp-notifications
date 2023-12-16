@@ -12,7 +12,9 @@ More to come...
 <img src="https://raw.githubusercontent.com/enku/gbp-notifications/master/docs/screenshot.png" alt="Email Notification" width="100%">
 </p>
 
-# Environment variables
+# Configuration
+
+## Environment variables
 
 Like Gentoo Build Publisher itself, gbp-notifications relies on environment
 variables for configuration. It looks at variables with a `GBP_NOTIFICATIONS_`
@@ -47,7 +49,7 @@ The last lines are settings for the email notification method.
 gbp-notifications has support for multiple notification methods but currently
 only email is implemented.
 
-# Config file for Recipients and Subscriptions
+## Config file for Recipients and Subscriptions
 
 Alternatively you can use a toml-formatted config file for recipients and
 subscriptions.  For that instead define the `GBP_NOTIFICATIONS_CONFIG_FILE`
