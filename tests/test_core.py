@@ -16,10 +16,7 @@ class SubscriptionTests(TestCase):
 
         ev1 = Event(name="build_pulled", machine="babette")
         ev2 = Event(name="died", machine="lighthouse")
-        expected = {
-            ev1: Subscription(subscribers=()),
-            ev2: Subscription(subscribers=()),
-        }
+        expected = {ev1: Subscription([r1]), ev2: Subscription([r2])}
         self.assertEqual(result, expected)
 
 

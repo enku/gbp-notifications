@@ -7,13 +7,8 @@ import typing as t
 from gbp_notifications.methods import NotificationMethod, get_method
 
 
-@dataclasses.dataclass(frozen=True, kw_only=True)
-class Subscription:
+class Subscription(tuple["Recipient", ...]):
     """Connection between an event and recipients"""
-
-    subscribers: tuple[Recipient, ...] = dataclasses.field(
-        default_factory=tuple, compare=False, hash=False
-    )
 
     @classmethod
     def from_string(
@@ -38,9 +33,7 @@ class Subscription:
                 if recipient.name in recipient_names:
                     subscribers.add(recipient)
 
-            subscriptions[event] = cls(
-                subscribers=tuple(sorted(subscribers, key=lambda s: s.name)),
-            )
+            subscriptions[event] = cls(sorted(subscribers, key=lambda s: s.name))
 
         return subscriptions
 
@@ -66,9 +59,7 @@ class Subscription:
                     for recipient in recipients
                     if recipient.name in recipient_names
                 )
-                subscriptions[event] = cls(
-                    subscribers=tuple(sorted(subscribers, key=lambda s: s.name)),
-                )
+                subscriptions[event] = cls(sorted(subscribers, key=lambda s: s.name))
 
         return subscriptions
 

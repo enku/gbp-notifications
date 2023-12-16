@@ -23,7 +23,7 @@ class SendTests(TestCase):
     recipient = Recipient(name="marduk", config={"email": "marduk@host.invalid"})
     settings = Settings(
         RECIPIENTS=(recipient,),
-        SUBSCRIPTIONS={event: Subscription(subscribers=(recipient,))},
+        SUBSCRIPTIONS={event: Subscription([recipient])},
         EMAIL_FROM="gbp@host.invalid",
     )
     method = email.EmailMethod(settings)
