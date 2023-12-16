@@ -5,7 +5,7 @@ from email.message import EmailMessage
 
 import jinja2.exceptions
 from gentoo_build_publisher.common import GBPMetadata
-from gentoo_build_publisher.settings import Settings as BPSettings
+from gentoo_build_publisher.settings import Settings as GBPSettings
 from gentoo_build_publisher.worker import Worker
 from jinja2 import Environment, PackageLoader, Template, select_autoescape
 
@@ -47,7 +47,7 @@ class EmailMethod:  # pylint: disable=too-few-public-methods
             logger.warning("No template found for event: %s", event.name)
             return
 
-        worker = Worker(BPSettings.from_environ())
+        worker = Worker(GBPSettings.from_environ())
         worker.run(sendmail, msg["From"], [msg["To"]], msg.as_string())
 
     def compose(self, event: Event, recipient: Recipient) -> EmailMessage:
