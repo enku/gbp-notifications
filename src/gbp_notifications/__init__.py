@@ -27,13 +27,12 @@ class Subscription(tuple["Recipient", ...]):
             event = Event.from_string(machine_event)
             recipient_names = names.split(",")
 
-            subscribers = set()
-
-            for recipient in recipients:
-                if recipient.name in recipient_names:
-                    subscribers.add(recipient)
-
-            subscriptions[event] = cls(sorted(subscribers, key=lambda s: s.name))
+            subscribers = (
+                recipient
+                for recipient in recipients
+                if recipient.name in recipient_names
+            )
+            subscriptions[event] = cls(sorted(set(subscribers), key=lambda s: s.name))
 
         return subscriptions
 
@@ -137,10 +136,8 @@ class Recipient:
                 'marduk': {'email': 'marduk@host.invalid'},
             }
         """
-        recipients: set[t.Self] = set()
+        recipients = (
+            cls(name=name, config=dict(attrs)) for name, attrs in data.items()
+        )
 
-        for name, attrs in data.items():
-            recipient = cls(name=name, config=dict(attrs))
-            recipients.add(recipient)
-
-        return tuple(sorted(recipients, key=lambda r: r.name))
+        return tuple(sorted(set(recipients), key=lambda r: r.name))
