@@ -7,25 +7,38 @@ Currently only email is supported.
 from __future__ import annotations
 
 import importlib.metadata
-import typing
+import typing as t
 from functools import lru_cache
 
-if typing.TYPE_CHECKING:  # pragma: nocover
+import jinja2.exceptions
+from jinja2 import Environment, PackageLoader, Template, select_autoescape
+
+if t.TYPE_CHECKING:  # pragma: nocover
     from gbp_notifications import Event, Recipient
     from gbp_notifications.settings import Settings
 
 
-class MethodNotFoundError(LookupError):
+class NotificationMethodError(Exception):
+    """General exception for Notification Methods"""
+
+
+class MethodNotFoundError(LookupError, NotificationMethodError):
     """Raised when the requested method was not found"""
 
 
-class NotificationMethod(typing.Protocol):  # pylint: disable=too-few-public-methods
+class TemplateNotFoundError(
+    jinja2.exceptions.TemplateNotFound, NotificationMethodError
+):
+    """Raised when the given template was not found"""
+
+
+class NotificationMethod(t.Protocol):  # pylint: disable=too-few-public-methods
     """Interface for notification methods"""
 
     def __init__(self, settings: Settings) -> None:
         """Initialize with the given Settings"""
 
-    def send(self, event: Event, recipient: Recipient) -> typing.Any:
+    def send(self, event: Event, recipient: Recipient) -> t.Any:
         """Send the given Event to the given Recipient"""
 
 
@@ -42,3 +55,19 @@ def get_method(name: str) -> type[NotificationMethod]:
     notification_method: type[NotificationMethod] = entry_point.load()
 
     return notification_method
+
+
+def load_template(name: str) -> Template:
+    """Load the template with the given name"""
+    loader = PackageLoader("gbp_notifications")
+    env = Environment(loader=loader, autoescape=select_autoescape(["html", "xml"]))
+
+    try:
+        return env.get_template(name)
+    except jinja2.exceptions.TemplateNotFound as error:
+        raise TemplateNotFoundError(name, error.message) from error
+
+
+def render_template(template: Template, context: dict[str, t.Any]) -> str:
+    """Render the given Template given the context"""
+    return template.render(**context)

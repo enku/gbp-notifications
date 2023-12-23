@@ -1,30 +1,20 @@
 """Email NotificationMethod"""
 import logging
-import typing as t
 from email.message import EmailMessage
 
-import jinja2.exceptions
 from gentoo_build_publisher.common import GBPMetadata
 from gentoo_build_publisher.settings import Settings as GBPSettings
 from gentoo_build_publisher.worker import Worker
-from jinja2 import Environment, PackageLoader, Template, select_autoescape
 
 from gbp_notifications import Event, Recipient
+from gbp_notifications.methods import (
+    TemplateNotFoundError,
+    load_template,
+    render_template,
+)
 from gbp_notifications.settings import Settings
 
 logger = logging.getLogger(__name__)
-
-
-def load_template(name: str) -> Template:
-    """Load the template with the given name"""
-    loader = PackageLoader("gbp_notifications")
-    env = Environment(loader=loader, autoescape=select_autoescape(["html", "xml"]))
-    return env.get_template(name)
-
-
-def render_template(template: Template, context: dict[str, t.Any]) -> str:
-    """Render the given Template given the context"""
-    return template.render(**context)
 
 
 class EmailMethod:  # pylint: disable=too-few-public-methods
@@ -42,7 +32,7 @@ class EmailMethod:  # pylint: disable=too-few-public-methods
         """Notify the given Recipient of the given Event"""
         try:
             msg = self.compose(event, recipient)
-        except jinja2.exceptions.TemplateNotFound:
+        except TemplateNotFoundError:
             # We don't have an email template for this event. Oh well..
             logger.warning("No template found for event: %s", event.name)
             return
