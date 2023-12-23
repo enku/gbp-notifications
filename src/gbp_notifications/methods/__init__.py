@@ -13,23 +13,11 @@ from functools import lru_cache
 import jinja2.exceptions
 from jinja2 import Environment, PackageLoader, Template, select_autoescape
 
+from gbp_notifications.exceptions import MethodNotFoundError, TemplateNotFoundError
+
 if t.TYPE_CHECKING:  # pragma: nocover
     from gbp_notifications import Event, Recipient
     from gbp_notifications.settings import Settings
-
-
-class NotificationMethodError(Exception):
-    """General exception for Notification Methods"""
-
-
-class MethodNotFoundError(LookupError, NotificationMethodError):
-    """Raised when the requested method was not found"""
-
-
-class TemplateNotFoundError(
-    jinja2.exceptions.TemplateNotFound, NotificationMethodError
-):
-    """Raised when the given template was not found"""
 
 
 class NotificationMethod(t.Protocol):  # pylint: disable=too-few-public-methods

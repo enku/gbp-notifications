@@ -7,11 +7,8 @@ from gentoo_build_publisher.settings import Settings as GBPSettings
 from gentoo_build_publisher.worker import Worker
 
 from gbp_notifications import Event, Recipient
-from gbp_notifications.methods import (
-    TemplateNotFoundError,
-    load_template,
-    render_template,
-)
+from gbp_notifications.exceptions import TemplateNotFoundError
+from gbp_notifications.methods import load_template, render_template
 from gbp_notifications.settings import Settings
 
 logger = logging.getLogger(__name__)
