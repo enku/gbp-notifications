@@ -8,8 +8,8 @@ from gentoo_build_publisher.worker import Worker
 
 from gbp_notifications import Event, Recipient
 from gbp_notifications.exceptions import TemplateNotFoundError
-from gbp_notifications.methods import load_template, render_template
 from gbp_notifications.settings import Settings
+from gbp_notifications.templates import load_template, render_template
 
 logger = logging.getLogger(__name__)
 
