@@ -82,12 +82,8 @@ def sendmail(from_addr: str, to_addrs: list[str], msg: str) -> None:
 
 def generate_email_content(event: Event, recipient: Recipient) -> str:
     """Generate the email body"""
-    packages = []
     gbp_meta: GBPMetadata | None = event.data.get("gbp_metadata")
-
-    if gbp_meta:
-        packages = gbp_meta.packages.built
-
+    packages = gbp_meta.packages.built if gbp_meta else []
     template_name = f"email_{event.name}.eml"
     template = load_template(template_name)
     context = {"packages": packages, "recipient": recipient, "event": event.data}
