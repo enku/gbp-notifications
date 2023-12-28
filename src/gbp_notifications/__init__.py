@@ -7,6 +7,28 @@ import typing as t
 from gbp_notifications.methods import NotificationMethod, get_method
 
 
+def split_string_by(s: str, delim: str) -> tuple[str, str]:
+    """Given the string <prefix><delim><suffix> return the prefix and suffix
+
+    Raise TypeError if delim is not found in the string.
+    """
+    prefix, sep, suffix = s.partition(delim)
+
+    if not sep:
+        raise TypeError(f"Invalid item in string {delim!r}")
+
+    return prefix, suffix
+
+
+def find_subscribers(
+    recipients: t.Iterable[Recipient], recipient_names: t.Collection[str]
+) -> set[Recipient]:
+    """Given the recipients return a subset of the recipients with the given names"""
+    return set(
+        recipient for recipient in recipients if recipient.name in recipient_names
+    )
+
+
 class Subscription(tuple["Recipient", ...]):
     """Connection between an event and recipients"""
 
@@ -20,18 +42,10 @@ class Subscription(tuple["Recipient", ...]):
         subscriptions: dict[Event, t.Self] = {}
 
         for item in string.split():
-            machine_event, eq, names = item.partition("=")
-            if not eq:
-                raise TypeError(f"Invalid item in string {item!r}")
-
+            machine_event, names = split_string_by(item, "=")
             event = Event.from_string(machine_event)
-            recipient_names = names.split(",")
-
-            subscribers = (
-                recipient
-                for recipient in recipients
-                if recipient.name in recipient_names
-            )
+            recipient_names = set(names.split(","))
+            subscribers = find_subscribers(recipients, recipient_names)
             subscriptions[event] = cls(sorted(set(subscribers), key=lambda s: s.name))
 
         return subscriptions
@@ -53,11 +67,7 @@ class Subscription(tuple["Recipient", ...]):
         for machine, attrs in data.items():
             for event_name, recipient_names in attrs.items():
                 event = Event(name=event_name, machine=machine)
-                subscribers = set(
-                    recipient
-                    for recipient in recipients
-                    if recipient.name in recipient_names
-                )
+                subscribers = find_subscribers(recipients, recipient_names)
                 subscriptions[event] = cls(sorted(subscribers, key=lambda s: s.name))
 
         return subscriptions
@@ -79,10 +89,7 @@ class Event:
 
         String should look like "babette.build_pulled"
         """
-        machine, dot, name = s.partition(".")
-
-        if not dot:
-            raise TypeError(f"Invalid string for Event: {s!r}")
+        machine, name = split_string_by(s, ".")
 
         return cls(name=name, machine=machine)
 
@@ -107,16 +114,11 @@ class Recipient:
         recipients: set[t.Self] = set()
 
         for item in string.split():
-            name, colon, rest = item.partition(":")
-            if not colon:
-                raise TypeError(f"Invalid item in string {item!r}")
+            name, rest = split_string_by(item, ":")
 
             attr_dict: dict[str, str] = {}
             for attrs in rest.split(","):
-                key, eq, value = attrs.partition("=")
-                if not eq:
-                    raise TypeError(r"Invalid attribute {attr!r}")
-
+                key, value = split_string_by(attrs, "=")
                 attr_dict[key] = value
 
             recipients.add(cls(name=name, config=attr_dict))
