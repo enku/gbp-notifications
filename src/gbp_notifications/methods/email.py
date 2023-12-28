@@ -46,12 +46,21 @@ class EmailMethod:  # pylint: disable=too-few-public-methods
     def compose(self, event: Event, recipient: Recipient) -> EmailMessage:
         """Compose message for the given event"""
         msg = EmailMessage()
-        msg["Subject"] = f"GBP: {event.name}"
-        msg["From"] = self.settings.EMAIL_FROM
-        msg["To"] = f'{recipient.name.replace("_", " ")} <{recipient.config["email"]}>'
+        set_headers(
+            msg,
+            Subject=f"GBP: {event.name}",
+            From=self.settings.EMAIL_FROM,
+            To=f'{recipient.name.replace("_", " ")} <{recipient.config["email"]}>',
+        )
         msg.set_content(generate_email_content(event, recipient))
 
         return msg
+
+
+def set_headers(msg: EmailMessage, **headers: str) -> None:
+    """Set the given headers in the given message"""
+    for name, value in headers.items():
+        msg[name] = value
 
 
 def sendmail(from_addr: str, to_addrs: list[str], msg: str) -> None:
