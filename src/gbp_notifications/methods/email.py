@@ -27,15 +27,21 @@ class EmailMethod:  # pylint: disable=too-few-public-methods
 
     def send(self, event: Event, recipient: Recipient) -> None:
         """Notify the given Recipient of the given Event"""
+        if msg := self.create_message(event, recipient):
+            worker = Worker(GBPSettings.from_environ())
+            worker.run(sendmail, msg["From"], [msg["To"]], msg.as_string())
+
+    def create_message(self, event: Event, recipient: Recipient) -> EmailMessage | None:
+        """Return the email message for the recipient
+
+        Return None if no message could be created for the event/recipient combo.
+        """
         try:
-            msg = self.compose(event, recipient)
+            return self.compose(event, recipient)
         except TemplateNotFoundError:
             # We don't have an email template for this event. Oh well..
             logger.warning("No template found for event: %s", event.name)
-            return
-
-        worker = Worker(GBPSettings.from_environ())
-        worker.run(sendmail, msg["From"], [msg["To"]], msg.as_string())
+            return None
 
     def compose(self, event: Event, recipient: Recipient) -> EmailMessage:
         """Compose message for the given event"""
