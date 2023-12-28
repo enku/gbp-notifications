@@ -29,6 +29,14 @@ def find_subscribers(
     )
 
 
+_T = t.TypeVar("_T")
+
+
+def sort_items_by(items: t.Iterable[_T], field: str) -> list[_T]:
+    """Sort the given items by the given attribute on the item"""
+    return sorted(items, key=lambda item: getattr(item, field))
+
+
 class Subscription(tuple["Recipient", ...]):
     """Connection between an event and recipients"""
 
@@ -46,7 +54,7 @@ class Subscription(tuple["Recipient", ...]):
             event = Event.from_string(machine_event)
             recipient_names = set(names.split(","))
             subscribers = find_subscribers(recipients, recipient_names)
-            subscriptions[event] = cls(sorted(set(subscribers), key=lambda s: s.name))
+            subscriptions[event] = cls(sort_items_by(subscribers, "name"))
 
         return subscriptions
 
@@ -68,7 +76,7 @@ class Subscription(tuple["Recipient", ...]):
             for event_name, recipient_names in attrs.items():
                 event = Event(name=event_name, machine=machine)
                 subscribers = find_subscribers(recipients, recipient_names)
-                subscriptions[event] = cls(sorted(subscribers, key=lambda s: s.name))
+                subscriptions[event] = cls(sort_items_by(subscribers, "name"))
 
         return subscriptions
 
@@ -123,7 +131,7 @@ class Recipient:
 
             recipients.add(cls(name=name, config=attr_dict))
 
-        return tuple(sorted(recipients, key=lambda r: r.name))
+        return tuple(sort_items_by(recipients, "name"))
 
     @classmethod
     def from_map(
@@ -142,4 +150,4 @@ class Recipient:
             cls(name=name, config=dict(attrs)) for name, attrs in data.items()
         )
 
-        return tuple(sorted(set(recipients), key=lambda r: r.name))
+        return tuple(sort_items_by(recipients, "name"))
