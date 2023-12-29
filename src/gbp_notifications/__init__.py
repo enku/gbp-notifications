@@ -101,6 +101,11 @@ class Event:
 
         return cls(name=name, machine=machine)
 
+    @classmethod
+    def from_build(cls, name, build, **data: t.Any) -> t.Self:
+        """Instantiate an Event with the given name and Build"""
+        return cls(name=name, machine=build.machine, data={"build": build, **data})
+
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class Recipient:

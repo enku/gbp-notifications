@@ -16,22 +16,26 @@ class SignalHandler(t.Protocol):  # pylint: disable=too-few-public-methods
         """We handle signals"""
 
 
+def send_event_to_recipients(event: Event, recipients: t.Iterable[Recipient]) -> None:
+    """Sent the given event to the given recipient given the recipiends methods"""
+    settings = Settings.from_environ()
+    for recipient in recipients:
+        for method in recipient.methods:
+            method(settings).send(event, recipient)
+
+
 def handle(event_name: str) -> SignalHandler:
     """Signal handler factory"""
 
     def handler(*, build: Build, **kwargs: t.Any) -> None:
-        data = {"build": build, **kwargs}
-        event = Event(name=event_name, machine=build.machine, data=data)
+        event = Event.from_build(event_name, build)
         settings = Settings.from_environ()
-        subscriptions = settings.SUBSCRIPTIONS
         recipients: set[Recipient] = set()
 
         for event in [*wildcard_events(event), event]:
-            recipients.update(subscriptions.get(event, Subscription()))
+            recipients.update(settings.SUBSCRIPTIONS.get(event, Subscription()))
 
-        for recipient in recipients:
-            for method in recipient.methods:
-                method(settings).send(event, recipient)
+        send_event_to_recipients(event, recipients)
 
     handler.__doc__ = f"SignalHandler for {event_name!r}"
     return handler
