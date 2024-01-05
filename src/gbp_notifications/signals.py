@@ -29,16 +29,24 @@ def handle(event_name: str) -> SignalHandler:
 
     def handler(*, build: Build, **kwargs: t.Any) -> None:
         event = Event.from_build(event_name, build)
-        settings = Settings.from_environ()
-        recipients: set[Recipient] = set()
-
-        for event in [*wildcard_events(event), event]:
-            recipients.update(settings.SUBSCRIPTIONS.get(event, Subscription()))
+        subscriptions = Settings.from_environ().SUBSCRIPTIONS
+        recipients = event_recipients(event, subscriptions)
 
         send_event_to_recipients(event, recipients)
 
     handler.__doc__ = f"SignalHandler for {event_name!r}"
     return handler
+
+
+def event_recipients(
+    event: Event, subscriptions: dict[Event, Subscription]
+) -> set[Recipient]:
+    """Given the subscriptions, return all recipients to the given event"""
+    return {
+        recipient
+        for event in (*wildcard_events(event), event)
+        for recipient in subscriptions.get(event, Subscription())
+    }
 
 
 def wildcard_events(event: Event) -> list[Event]:
