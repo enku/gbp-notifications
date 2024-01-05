@@ -17,7 +17,7 @@ class SignalHandler(t.Protocol):  # pylint: disable=too-few-public-methods
 
 
 def send_event_to_recipients(event: Event, recipients: t.Iterable[Recipient]) -> None:
-    """Sent the given event to the given recipient given the recipiends methods"""
+    """Sent the given event to the given recipient given the recipient's methods"""
     settings = Settings.from_environ()
     for recipient in recipients:
         for method in recipient.methods:
