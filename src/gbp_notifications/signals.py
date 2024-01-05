@@ -1,4 +1,6 @@
 """Signal handlers for GBP Notifications"""
+from __future__ import annotations
+
 import typing as t
 
 from gentoo_build_publisher.common import Build
@@ -6,6 +8,24 @@ from gentoo_build_publisher.signals import dispatcher
 
 from gbp_notifications import Event, Recipient, Subscription
 from gbp_notifications.settings import Settings
+
+
+def get_handler(event_name: str) -> SignalHandler:
+    """Signal handler factory"""
+
+    def handler(*, build: Build, **kwargs: t.Any) -> None:
+        send_event_to_recipients(Event.from_build(event_name, build))
+
+    handler.__doc__ = f"SignalHandler for {event_name!r}"
+    return handler
+
+
+# Note handlers are kept as weak references in the dispatcher, so we need to keep them
+# at the module level else they'll get garbage collected away
+build_pulled_handler = get_handler("build_pulled")
+dispatcher.bind(postpull=build_pulled_handler)
+build_published_handler = get_handler("build_published")
+dispatcher.bind(published=build_published_handler)
 
 
 class SignalHandler(t.Protocol):  # pylint: disable=too-few-public-methods
@@ -16,26 +36,12 @@ class SignalHandler(t.Protocol):  # pylint: disable=too-few-public-methods
         """We handle signals"""
 
 
-def send_event_to_recipients(event: Event, recipients: t.Iterable[Recipient]) -> None:
+def send_event_to_recipients(event: Event) -> None:
     """Sent the given event to the given recipient given the recipient's methods"""
     settings = Settings.from_environ()
-    for recipient in recipients:
+    for recipient in event_recipients(event, settings.SUBSCRIPTIONS):
         for method in recipient.methods:
             method(settings).send(event, recipient)
-
-
-def handle(event_name: str) -> SignalHandler:
-    """Signal handler factory"""
-
-    def handler(*, build: Build, **kwargs: t.Any) -> None:
-        event = Event.from_build(event_name, build)
-        subscriptions = Settings.from_environ().SUBSCRIPTIONS
-        recipients = event_recipients(event, subscriptions)
-
-        send_event_to_recipients(event, recipients)
-
-    handler.__doc__ = f"SignalHandler for {event_name!r}"
-    return handler
 
 
 def event_recipients(
@@ -59,11 +65,3 @@ def wildcard_events(event: Event) -> list[Event]:
         Event(name="*", machine=event.machine),
         Event(name=event.name, machine="*"),
     ]
-
-
-# Note handlers are kept as weak references in the dispatcher, so we need to keep them
-# at the module level so they don't fall away
-build_pulled_handler = handle("build_pulled")
-dispatcher.bind(postpull=build_pulled_handler)
-build_published_handler = handle("build_published")
-dispatcher.bind(published=build_published_handler)
