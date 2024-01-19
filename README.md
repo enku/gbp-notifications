@@ -6,11 +6,36 @@ notifications when various events occur in a GBP instance. This is to scratch
 my personal itch where i want to receive emails when certain machines have new
 builds pulled.
 
-More to come...
-
 <p align="center">
 <img src="https://raw.githubusercontent.com/enku/gbp-notifications/master/docs/screenshot.png" alt="Email Notification" width="100%">
 </p>
+
+
+# Installation
+
+This assumes you already have a working Gentoo Build Publisher installation.
+If not refer to the [GBP Install
+Guide](https://github.com/enku/gentoo-build-publisher/wiki/Install-Guide)
+first.
+
+Install the gbp-notifications package onto the GBP instance.
+
+```
+cd /home/gbp
+sudo -u gbp -H ./bin/pip install gbp-notifications
+```
+
+Now add `"gbp_notifications"` to your `INSTALLED_APPS`:
+
+```
+$EDITOR djangoproject/settings.py
+```
+
+Restart your web app.
+
+```sh
+systemctl restart gentoo-build-publisher-wsgi.service
+```
 
 # Configuration
 
@@ -22,6 +47,8 @@ prefix. For example to set up a recipient to receive email notifications when
 a build for the machine "babette" gets pulled:
 
 ```sh
+# /etc/gentoo-build-publisher.conf
+
 GBP_NOTIFICATIONS_RECIPIENTS="albert:email=marduk@host.invalid"
 GBP_NOTIFICATIONS_SUBSCRIPTIONS="babette.build_pulled=albert"
 
