@@ -3,7 +3,7 @@
 import os
 from unittest import mock
 
-from gentoo_build_publisher.common import Build
+from gentoo_build_publisher.common import Build, GBPMetadata, Package, PackageMetadata
 
 from gbp_notifications import Event, Recipient
 from gbp_notifications.methods import get_method
@@ -81,3 +81,30 @@ class HandlerTests(TestCase):
         dispatcher.emit("published", build=build)
 
         mock_get_method.return_value.send.assert_not_called()
+
+
+    @mock.patch("gbp_notifications.signals.send_event_to_recipients")
+    def test_sends_event_data(self, send_event_to_recipients, _mock_get_method) -> None:
+        build = Build(machine="babette", build_id="934")
+        package = Package(
+            build_id=1,
+            build_time=12345,
+            cpv="media-sound/sox-14.4.2_p20210509-r2",
+            path="/path/to/binary.tar.xz",
+            repo="gentoo",
+            size=120,
+        )
+        packages = PackageMetadata(total=1, size=50, built=[package])
+        gbp_metadata = GBPMetadata(build_duration=600, packages=packages)
+        dispatcher.emit(
+            "postpull", build=build, packages=[package], gbp_metadata=gbp_metadata
+        )
+        data = {
+            "build": build,
+            "packages": [package],
+            "gbp_metadata": gbp_metadata,
+        }
+        event = send_event_to_recipients.call_args[0][0]
+        self.assertEqual(event.name, "build_pulled")
+        self.assertEqual(event.machine, "babette")
+        self.assertEqual(event.data, data)

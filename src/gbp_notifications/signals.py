@@ -14,7 +14,7 @@ def get_handler(event_name: str) -> SignalHandler:
     """Signal handler factory"""
 
     def handler(*, build: Build, **kwargs: t.Any) -> None:
-        send_event_to_recipients(Event.from_build(event_name, build))
+        send_event_to_recipients(Event.from_build(event_name, build, **kwargs))
 
     handler.__doc__ = f"SignalHandler for {event_name!r}"
     return handler
