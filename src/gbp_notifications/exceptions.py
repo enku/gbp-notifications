@@ -1,4 +1,5 @@
 """NotificationsExceptions here"""
+
 import jinja2.exceptions
 
 

@@ -1,4 +1,5 @@
 """Email NotificationMethod"""
+
 import logging
 from email.message import EmailMessage
 

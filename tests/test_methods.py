@@ -1,4 +1,5 @@
 """Tests for the methods module"""
+
 # pylint: disable=missing-docstring
 
 from gbp_notifications import methods

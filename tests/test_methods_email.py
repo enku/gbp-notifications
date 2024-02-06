@@ -1,4 +1,5 @@
 """Tests for the methods.email module"""
+
 # pylint: disable=missing-docstring
 from unittest import mock
 

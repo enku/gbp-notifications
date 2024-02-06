@@ -1,4 +1,5 @@
 """Signal handlers for GBP Notifications"""
+
 from __future__ import annotations
 
 import typing as t

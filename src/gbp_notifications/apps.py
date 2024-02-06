@@ -1,4 +1,5 @@
 """AppConfigs for gbp-notifications"""
+
 from django.apps import AppConfig
 
 

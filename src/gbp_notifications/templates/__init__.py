@@ -1,4 +1,5 @@
 """GBP Notifications Template handling"""
+
 import typing as t
 
 import jinja2.exceptions

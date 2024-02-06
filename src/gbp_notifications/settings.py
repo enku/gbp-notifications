@@ -1,4 +1,5 @@
 """Settings for gbp-notifications"""
+
 import dataclasses as dc
 import tomllib
 import typing as t

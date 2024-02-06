@@ -1,4 +1,5 @@
 """Tests for gbp-notifications core"""
+
 # pylint: disable=missing-docstring
 from gbp_notifications import Event, Recipient, Subscription
 from gbp_notifications.methods.email import EmailMethod

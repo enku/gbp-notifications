@@ -4,6 +4,7 @@ email or SMS.
 
 Currently only email is supported.
 """
+
 from __future__ import annotations
 
 import importlib.metadata

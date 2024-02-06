@@ -1,4 +1,5 @@
 """Tests for the signal handlers"""
+
 # pylint: disable=missing-docstring
 import os
 from unittest import mock
@@ -81,7 +82,6 @@ class HandlerTests(TestCase):
         dispatcher.emit("published", build=build)
 
         mock_get_method.return_value.send.assert_not_called()
-
 
     @mock.patch("gbp_notifications.signals.send_event_to_recipients")
     def test_sends_event_data(self, send_event_to_recipients, _mock_get_method) -> None:

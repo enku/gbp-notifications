@@ -1,4 +1,5 @@
 """Tests for Settings"""
+
 # pylint: disable=missing-docstring
 
 from pathlib import Path
