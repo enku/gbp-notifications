@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import typing as t
 
-from gentoo_build_publisher.common import Build
 from gentoo_build_publisher.signals import dispatcher
+from gentoo_build_publisher.types import Build
 
 from gbp_notifications import Event, Recipient, Subscription
 from gbp_notifications.settings import Settings

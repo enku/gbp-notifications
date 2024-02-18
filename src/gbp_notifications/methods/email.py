@@ -3,8 +3,8 @@
 import logging
 from email.message import EmailMessage
 
-from gentoo_build_publisher.common import GBPMetadata
 from gentoo_build_publisher.settings import Settings as GBPSettings
+from gentoo_build_publisher.types import GBPMetadata
 from gentoo_build_publisher.worker import Worker
 
 from gbp_notifications import Event, Recipient

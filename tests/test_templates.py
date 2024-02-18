@@ -1,7 +1,7 @@
 """Tests for the templates subpackage"""
 
 # pylint: disable=missing-docstring
-from gentoo_build_publisher.common import Build
+from gentoo_build_publisher.types import Build
 from jinja2 import Template
 
 from gbp_notifications.exceptions import TemplateNotFoundError
