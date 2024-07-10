@@ -11,30 +11,35 @@ from gbp_notifications import Event, Recipient, Subscription
 from gbp_notifications.settings import Settings
 
 
-def get_handler(event_name: str) -> SignalHandler:
-    """Signal handler factory"""
-
-    def handler(*, build: Build, **kwargs: t.Any) -> None:
-        send_event_to_recipients(Event.from_build(event_name, build, **kwargs))
-
-    handler.__doc__ = f"SignalHandler for {event_name!r}"
-    return handler
-
-
-# Note handlers are kept as weak references in the dispatcher, so we need to keep them
-# at the module level else they'll get garbage collected away
-build_pulled_handler = get_handler("build_pulled")
-dispatcher.bind(postpull=build_pulled_handler)
-build_published_handler = get_handler("build_published")
-dispatcher.bind(published=build_published_handler)
-
-
 class SignalHandler(t.Protocol):  # pylint: disable=too-few-public-methods
     """Signal handler function"""
 
     @staticmethod
     def __call__(*, build: Build, **kwargs: t.Any) -> None:
         """We handle signals"""
+
+
+class _SignalHandlers:  # pylint: disable=too-few-public-methods
+    """Container for signal handlers.
+
+    This class is mainly to encapsolate the signal handlers that need a reference
+    else they get garbage collected away
+    """
+
+    @staticmethod
+    def get_handler(event_name: str) -> SignalHandler:
+        """Signal handler factory"""
+
+        def handler(*, build: Build, **kwargs: t.Any) -> None:
+            send_event_to_recipients(Event.from_build(event_name, build, **kwargs))
+
+        handler.__doc__ = f"SignalHandler for {event_name!r}"
+        return handler
+
+    build_pulled_handler = get_handler("build_pulled")
+    dispatcher.bind(postpull=build_pulled_handler)
+    build_published_handler = get_handler("build_published")
+    dispatcher.bind(published=build_published_handler)
 
 
 def send_event_to_recipients(event: Event) -> None:
