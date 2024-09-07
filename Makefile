@@ -14,7 +14,7 @@ export PYTHONDONTWRITEBYTECODE
 
 
 .coverage: $(src) $(tests)
-	coverage run ./tests/runtests.py
+	coverage run -m tests
 
 test: .coverage
 .PHONY: test
