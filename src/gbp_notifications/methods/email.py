@@ -1,6 +1,7 @@
 """Email NotificationMethod"""
 
 import logging
+from copy import deepcopy
 from email.message import EmailMessage
 
 from gentoo_build_publisher.settings import Settings as GBPSettings
@@ -46,9 +47,8 @@ class EmailMethod:  # pylint: disable=too-few-public-methods
 
     def compose(self, event: Event, recipient: Recipient) -> EmailMessage:
         """Compose message for the given event"""
-        msg = EmailMessage()
-        set_headers(
-            msg,
+        msg = set_headers(
+            EmailMessage(),
             Subject=f"GBP: {event.name}",
             From=self.settings.EMAIL_FROM,
             To=f'{recipient.name.replace("_", " ")} <{recipient.config["email"]}>',
@@ -58,10 +58,13 @@ class EmailMethod:  # pylint: disable=too-few-public-methods
         return msg
 
 
-def set_headers(msg: EmailMessage, **headers: str) -> None:
+def set_headers(msg: EmailMessage, **headers: str) -> EmailMessage:
     """Set the given headers in the given message"""
+    msg = deepcopy(msg)
     for name, value in headers.items():
         msg[name] = value
+
+    return msg
 
 
 def sendmail(from_addr: str, to_addrs: list[str], msg: str) -> None:
