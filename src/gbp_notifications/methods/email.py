@@ -49,7 +49,7 @@ class EmailMethod:  # pylint: disable=too-few-public-methods
         """Compose message for the given event"""
         msg = set_headers(
             EmailMessage(),
-            Subject=f"GBP: {event.name}",
+            Subject=f"Gentoo Build Publisher: {event.name}",
             From=self.settings.EMAIL_FROM,
             To=f'{recipient.name.replace("_", " ")} <{recipient.config["email"]}>',
         )
