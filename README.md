@@ -25,12 +25,6 @@ cd /home/gbp
 sudo -u gbp -H ./bin/pip install git+https://github.com/enku/gbp-notifications.git
 ```
 
-Now add `"gbp_notifications"` to your `INSTALLED_APPS`:
-
-```
-$EDITOR djangoproject/settings.py
-```
-
 Restart your web app.
 
 ```sh

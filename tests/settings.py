@@ -14,7 +14,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "gentoo_build_publisher.apps.GentooBuildPublisherConfig",
-    "gbp_notifications.apps.GBPNotificationsConfig",
 ]
 
 MIDDLEWARE = [

@@ -7,6 +7,8 @@ import typing as t
 
 from gbp_notifications.methods import NotificationMethod, get_method
 
+APP = "gbp_notifications"
+
 
 def split_string_by(s: str, delim: str) -> tuple[str, str]:
     """Given the string <prefix><delim><suffix> return the prefix and suffix

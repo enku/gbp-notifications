@@ -6,7 +6,7 @@ authors = [
     {name = "Albert Hopkins", email = "marduk@letterboxes.org"},
 ]
 dependencies = [
-    "gentoo-build-publisher @ git+https://github.com/enku/gentoo-build-publisher.git",
+    "gentoo-build-publisher>=2.3.0",
     "Jinja2>=3.1.2",
 ]
 requires-python = ">=3.11"
@@ -19,6 +19,9 @@ classifiers = [
 ]
 readme = "README.md"
 license = {text = "GPL-3+"}
+
+[project.entry-points."gentoo_build_publisher.apps"]
+gbp-notifications = "gbp_notifications:APP"
 
 [project.entry-points."gbp_notifications.notification_method"]
 email = "gbp_notifications.methods.email:EmailMethod"
