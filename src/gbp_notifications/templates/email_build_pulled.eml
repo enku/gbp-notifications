@@ -1,6 +1,6 @@
 Just letting you know about the recent event for {{event.build.machine}}.
 
-Build {{event.build.build_id}} has been pushed to GBP.
+Build {{event.build.build_id}} has been pushed to Gentoo Build Publisher.
 {% if event.gbp_metadata and event.gbp_metadata.packages.built %}
 The following packages were built:
 {% for package in event.gbp_metadata.packages.built %}
