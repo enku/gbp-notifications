@@ -33,17 +33,6 @@ build-backend = "pdm.backend"
 [tool.pdm]
 version = { source = "scm" }
 
-[tool.pdm.dev-dependencies]
-dev = [
-    "pylint>=3.0.3",
-    "pylint-django>=2.5.5",
-    "typos>=1.16.24",
-    "coverage[toml]>=7.3.2",
-    "mypy>=1.7.1",
-    "django-stubs>=4.2.7",
-    "black>=23.12.0",
-]
-
 [tool.coverage.run]
 source = ["gbp_notifications"]
 omit = ["src/gbp_notifications/migrations/*"]
@@ -55,12 +44,24 @@ files = ["src/gbp_notifications"]
 mypy_path = ["tests"]
 
 [tool.django-stubs]
-django_settings_module = "settings"
+django_settings_module = "gbp_testkit.settings"
 strict = true
 
 [tool.pylint.master]
 load-plugins = "pylint_django,pylint.extensions.bad_builtin"
-django-settings-module = "settings"
+django-settings-module = "gbp_testkit.settings"
 init-hook = "import sys; sys.path.insert(0, 'tests')"
 bad-functions = "print"
 ignore = ["/migrations/"]
+
+[dependency-groups]
+dev = [
+    "pylint>=3.0.3",
+    "pylint-django>=2.5.5",
+    "typos>=1.16.24",
+    "coverage[toml]>=7.3.2",
+    "mypy>=1.7.1",
+    "django-stubs>=4.2.7",
+    "black>=23.12.0",
+    "gbp-testkit @ git+https://github.com/enku/gbp-testkit.git@master",
+]

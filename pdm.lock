@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = []
 lock_version = "4.5.0"
-content_hash = "sha256:17fef8ee7df738249fcb074bf718e3e45c51039cea4e2b2bc9d4dc3cf4e0b36d"
+content_hash = "sha256:fee2a8529184c0024ecad6fc7869ee42e36bce47bf9dee8c2e994e142b338ef7"
 
 [[metadata.targets]]
 requires_python = ">=3.11"
@@ -553,6 +553,47 @@ dependencies = [
 files = [
     {file = "django_stubs_ext-5.1.3-py3-none-any.whl", hash = "sha256:64561fbc53e963cc1eed2c8eb27e18b8e48dcb90771205180fe29fc8a59e55fd"},
     {file = "django_stubs_ext-5.1.3.tar.gz", hash = "sha256:3e60f82337f0d40a362f349bf15539144b96e4ceb4dbd0239be1cd71f6a74ad0"},
+]
+
+[[package]]
+name = "factory-boy"
+version = "3.3.3"
+requires_python = ">=3.8"
+summary = "A versatile test fixtures replacement based on thoughtbot's factory_bot for Ruby."
+dependencies = [
+    "Faker>=0.7.0",
+]
+files = [
+    {file = "factory_boy-3.3.3-py2.py3-none-any.whl", hash = "sha256:1c39e3289f7e667c4285433f305f8d506efc2fe9c73aaea4151ebd5cdea394fc"},
+    {file = "factory_boy-3.3.3.tar.gz", hash = "sha256:866862d226128dfac7f2b4160287e899daf54f2612778327dd03d0e2cb1e3d03"},
+]
+
+[[package]]
+name = "faker"
+version = "36.1.1"
+requires_python = ">=3.9"
+summary = "Faker is a Python package that generates fake data for you."
+dependencies = [
+    "tzdata",
+]
+files = [
+    {file = "Faker-36.1.1-py3-none-any.whl", hash = "sha256:ad1f1be7fd692ec0256517404a9d7f007ab36ac5d4674082fa72404049725eaa"},
+    {file = "faker-36.1.1.tar.gz", hash = "sha256:7cb2bbd4c8f040e4a340ae4019e9a48b6cf1db6a71bda4e5a61d8d13b7bef28d"},
+]
+
+[[package]]
+name = "gbp-testkit"
+version = "0.1.dev9"
+requires_python = ">=3.11"
+git = "https://github.com/enku/gbp-testkit.git"
+ref = "master"
+revision = "5efd1f3ae2bd110b5b3e9e6601d87b565f08dde3"
+summary = "Gentoo Build Publisher testing tools"
+dependencies = [
+    "django>=5.1.6",
+    "factory-boy>=3.3.3",
+    "types-requests>=2.32.0.20241016",
+    "unittest-fixtures @ git+https://github.com/enku/unittest-fixtures.git",
 ]
 
 [[package]]
@@ -1210,6 +1251,19 @@ files = [
 ]
 
 [[package]]
+name = "types-requests"
+version = "2.32.0.20241016"
+requires_python = ">=3.8"
+summary = "Typing stubs for requests"
+dependencies = [
+    "urllib3>=2",
+]
+files = [
+    {file = "types-requests-2.32.0.20241016.tar.gz", hash = "sha256:0d9cad2f27515d0e3e3da7134a1b6f28fb97129d86b867f24d9c726452634d95"},
+    {file = "types_requests-2.32.0.20241016-py3-none-any.whl", hash = "sha256:4195d62d6d3e043a4eaaf08ff8a62184584d2e8684e9d2aa178c7915a7da3747"},
+]
+
+[[package]]
 name = "typing-extensions"
 version = "4.12.2"
 requires_python = ">=3.8"
@@ -1246,6 +1300,14 @@ files = [
     {file = "tzdata-2025.1-py2.py3-none-any.whl", hash = "sha256:7e127113816800496f027041c570f50bcd464a020098a3b6b199517772303639"},
     {file = "tzdata-2025.1.tar.gz", hash = "sha256:24894909e88cdb28bd1636c6887801df64cb485bd593f2fd83ef29075a81d694"},
 ]
+
+[[package]]
+name = "unittest-fixtures"
+version = "0.1.dev57"
+requires_python = ">=3.11"
+git = "https://github.com/enku/unittest-fixtures.git"
+revision = "d6c46e57045025eb9757afd395099733fe0b28c1"
+summary = "A small library for loading unittest fixtures"
 
 [[package]]
 name = "urllib3"
