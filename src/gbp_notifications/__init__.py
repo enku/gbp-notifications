@@ -7,7 +7,7 @@ import typing as t
 
 from gbp_notifications.methods import NotificationMethod, get_method
 
-APP = "gbp_notifications"
+plugin = {"name": "gbp-notifications", "app": "gbp_notifications"}
 
 
 def split_string_by(s: str, delim: str) -> tuple[str, str]:
