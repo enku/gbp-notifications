@@ -6,8 +6,8 @@ from pathlib import Path
 
 from unittest_fixtures import Fixtures, given
 
-from gbp_notifications import Event, Recipient, Subscription
 from gbp_notifications.settings import Settings
+from gbp_notifications.types import Event, Recipient, Subscription
 
 from . import TestCase
 

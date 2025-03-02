@@ -7,8 +7,8 @@ import typing as t
 from gentoo_build_publisher.signals import dispatcher
 from gentoo_build_publisher.types import Build
 
-from gbp_notifications import Event, Recipient, Subscription
 from gbp_notifications.settings import Settings
+from gbp_notifications.types import Event, Recipient, Subscription
 
 
 class SignalHandler(t.Protocol):  # pylint: disable=too-few-public-methods

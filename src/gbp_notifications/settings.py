@@ -7,7 +7,7 @@ from pathlib import Path
 
 from gentoo_build_publisher.settings import BaseSettings
 
-from . import Event, Recipient, Subscription
+from .types import Event, Recipient, Subscription
 
 
 @dc.dataclass(frozen=True, kw_only=True)

@@ -6,9 +6,9 @@ from unittest import mock
 
 from gentoo_build_publisher.types import Build, GBPMetadata, Package, PackageMetadata
 
-from gbp_notifications import Event, Recipient
 from gbp_notifications.methods import get_method
 from gbp_notifications.signals import dispatcher
+from gbp_notifications.types import Event, Recipient
 
 from . import TestCase
 
@@ -20,7 +20,10 @@ COMMON_SETTINGS = {
 
 
 def settings(**kwargs: str):
-    return mock.patch.dict(os.environ, {**COMMON_SETTINGS, **kwargs}, clear=True)
+    def wrap(func):
+        mock.patch.dict(os.environ, {**COMMON_SETTINGS, **kwargs}, clear=True)(func)
+
+    return wrap
 
 
 @mock.patch("gbp_notifications.methods.email.EmailMethod")

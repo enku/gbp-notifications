@@ -5,9 +5,9 @@ from unittest import mock
 
 from gentoo_build_publisher.types import Build, GBPMetadata, Package, PackageMetadata
 
-from gbp_notifications import Event, Recipient, Subscription
 from gbp_notifications.methods import email
 from gbp_notifications.settings import Settings
+from gbp_notifications.types import Event, Recipient, Subscription
 
 from . import TestCase
 
