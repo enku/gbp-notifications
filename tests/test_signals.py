@@ -102,11 +102,7 @@ class HandlerTests(TestCase):
         dispatcher.emit(
             "postpull", build=build, packages=[package], gbp_metadata=gbp_metadata
         )
-        data = {
-            "build": build,
-            "packages": [package],
-            "gbp_metadata": gbp_metadata,
-        }
+        data = {"build": build, "packages": [package], "gbp_metadata": gbp_metadata}
         event = send_event_to_recipients.call_args[0][0]
         self.assertEqual(event.name, "build_pulled")
         self.assertEqual(event.machine, "babette")

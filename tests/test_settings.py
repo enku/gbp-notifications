@@ -32,8 +32,7 @@ class SettingTests(TestCase):
         pw_file.write_text("file", encoding="UTF-8")
 
         settings = Settings(
-            EMAIL_SMTP_PASSWORD="string",
-            EMAIL_SMTP_PASSWORD_FILE=str(pw_file),
+            EMAIL_SMTP_PASSWORD="string", EMAIL_SMTP_PASSWORD_FILE=str(pw_file)
         )
 
         self.assertEqual(settings.email_password, "file")
