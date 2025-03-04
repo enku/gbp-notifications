@@ -8,6 +8,8 @@ authors = [
 dependencies = [
     "gentoo-build-publisher>=2.4.0rc1",
     "Jinja2>=3.1.2",
+    "orjson>=3.10.15",
+    "requests>=2.32.3",
 ]
 requires-python = ">=3.11"
 classifiers = [
@@ -25,6 +27,7 @@ gbp-notifications = "gbp_notifications:plugin"
 
 [project.entry-points."gbp_notifications.notification_method"]
 email = "gbp_notifications.methods.email:EmailMethod"
+webhook = "gbp_notifications.methods.webhook:WebhookMethod"
 
 [build-system]
 requires = ["pdm-backend"]

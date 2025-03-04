@@ -107,7 +107,24 @@ babette = {build_pulled = ["albert", "bob"]}
 lighthouse = {build_pulled = ["albert"], build_published = ["bob"]}
 ```
 
+## Webhook method
 
-# ToDo
-- docs
-- more notification methods
+In addition to email, gbp-notifications supports web hooks. For example,
+consider the environment variables:
+
+```
+GBP_NOTIFICATIONS_RECIPIENTS="marduk:webhook=http://host.invalid/webhook|X-Pre-Shared-Key=1234",
+GBP_NOTIFICATIONS_SUBSCRIPTIONS="*.build_pulled=marduk"
+```
+
+The subscriber "marduk" is subscribed the `build_pulled` event for all
+machines. The recipient for marduk has a "webhook". The configuration for the
+web hook has values that are delimited with `"|"`. The first item will be the
+URL of the webhook and any remainint items will be HTTP headers used when
+requesting the URL. Note that header definitions are to be given in form
+`name=value` and not `name: value`.
+
+Webhooks might be used, for example, to automatically update machines whenever
+a new build is published. Or perhaps a desktop notification:
+
+![screenshot](https://raw.githubusercontent.com/enku/screenshots/refs/heads/master/gbp-notifications/desktop-notification.png)

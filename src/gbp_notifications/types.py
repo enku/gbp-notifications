@@ -50,7 +50,9 @@ class Recipient:
     """Recipient of a notification"""
 
     name: str
-    config: dict[str, str] = field(default_factory=dict, hash=False, compare=False)
+    config: dict[str, str] = field(
+        default_factory=dict, hash=False, compare=False, repr=False
+    )
 
     @property
     def methods(self) -> tuple[type[NotificationMethod], ...]:
