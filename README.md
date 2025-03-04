@@ -22,7 +22,7 @@ Install the gbp-notifications package onto the GBP instance.
 
 ```
 cd /home/gbp
-sudo -u gbp -H ./bin/pip install git+https://github.com/enku/gbp-notifications.git
+sudo -u gbp -H ./bin/pip install gbp-notifications
 ```
 
 Restart your web app.
