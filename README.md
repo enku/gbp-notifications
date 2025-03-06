@@ -47,7 +47,7 @@ GBP_NOTIFICATIONS_RECIPIENTS="albert:email=marduk@host.invalid"
 GBP_NOTIFICATIONS_SUBSCRIPTIONS="babette.build_pulled=albert"
 
 GBP_NOTIFICATIONS_EMAIL_FROM="marduk@host.invalid"
-GBP_NOTIFICATIONS_EMAIL_SMTP_HOST"=smtp.email.invalid"
+GBP_NOTIFICATIONS_EMAIL_SMTP_HOST="smtp.email.invalid"
 GBP_NOTIFICATIONS_EMAIL_SMTP_USERNAME="marduk@host.invalid"
 GBP_NOTIFICATIONS_EMAIL_SMTP_PASSWORD="supersecret"
 ```
