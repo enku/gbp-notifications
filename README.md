@@ -15,7 +15,7 @@ builds pulled.
 
 This assumes you already have a working Gentoo Build Publisher installation.
 If not refer to the [GBP Install
-Guide](https://github.com/enku/gentoo-build-publisher/wiki/Install-Guide)
+Guide](https://github.com/enku/gentoo-build-publisher/blob/master/docs/how-to-install.md#gentoo-build-publisher-install-guide)
 first.
 
 Install the gbp-notifications package onto the GBP instance.
