@@ -3,6 +3,7 @@
 # pylint: disable=missing-docstring
 
 from gbp_notifications.methods.email import EmailMethod
+from gbp_notifications.settings import Settings
 from gbp_notifications.types import Event, Recipient, Subscription
 
 from . import TestCase
@@ -41,3 +42,15 @@ class RecipientTests(TestCase):
         )
 
         self.assertEqual(result, expected)
+
+    def test_from_name(self) -> None:
+        recipient = Recipient(name="foo")
+        settings = Settings(RECIPIENTS=(recipient,))
+
+        self.assertEqual(Recipient.from_name("foo", settings), recipient)
+
+    def test_from_name_lookuperror(self) -> None:
+        settings = Settings(RECIPIENTS=())
+
+        with self.assertRaises(LookupError):
+            Recipient.from_name("foo", settings)

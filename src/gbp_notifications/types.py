@@ -1,6 +1,6 @@
 """Data types for gbp-notifications"""
 
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from typing import TYPE_CHECKING, Any, Iterable, Mapping, Protocol, Self
 
 from gbp_notifications import methods, utils
@@ -94,6 +94,18 @@ class Recipient:
         )
 
         return tuple(utils.sort_items_by(recipients, "name"))
+
+    @classmethod
+    def from_name(cls, name: str, settings: "Settings") -> Self:
+        """Given the name, return the registered recipient"""
+        recipients = [r for r in settings.RECIPIENTS if r.name == name]
+
+        if not recipients:
+            raise LookupError(name)
+
+        assert len(recipients) == 1
+
+        return cls(**asdict(recipients[0]))
 
 
 class Subscription(tuple[Recipient, ...]):

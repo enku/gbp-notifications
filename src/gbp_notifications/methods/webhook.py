@@ -35,10 +35,8 @@ def send_request(recipient_name: str, body: str) -> None:
     from gbp_notifications.methods.email import logger
     from gbp_notifications.settings import Settings
 
-    config = Settings.from_environ()
-    [recipient] = [r for r in config.RECIPIENTS if r.name == recipient_name]
-    webhook_config = recipient.config["webhook"]
-    url, headers = parse_config(webhook_config)
+    recipient = Recipient.from_name(recipient_name, Settings.from_environ())
+    url, headers = parse_config(recipient.config["webhook"])
     post = requests.post
     headers["Content-Type"] = "application/json"
 
