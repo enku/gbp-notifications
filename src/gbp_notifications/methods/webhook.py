@@ -81,11 +81,17 @@ def parse_header_conf(header_conf: str) -> CaseInsensitiveDict[str]:
 
     Return a case-insensitive dict.
     """
-    if not header_conf:
-        return CaseInsensitiveDict()
+    headers: CaseInsensitiveDict[str] = CaseInsensitiveDict()
 
-    return CaseInsensitiveDict(
-        (k.strip(), v.strip())
-        for item in header_conf.split("|")
-        for k, v in [item.split("=")]
-    )
+    for part in header_conf.split("|"):
+        if part := part.strip():
+            key, equals, value = part.partition("=")
+            key = key.rstrip()
+            value = value.lstrip()
+
+            if not (key and equals):
+                raise ValueError(f"Invalid header spec: {header_conf!r}")
+
+            headers[key] = value
+
+    return headers

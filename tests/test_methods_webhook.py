@@ -100,3 +100,49 @@ class ParseConfigTests(TestCase):
         result = webhook.parse_config("http://host.invalid/webhook|")
 
         self.assertEqual(result, ("http://host.invalid/webhook", {}))
+
+
+class ParseHeaderConfTests(TestCase):
+    """Tests for webhook.parse_header_conf()"""
+
+    def test(self) -> None:
+        header_conf = "This=that|The=other"
+
+        self.assertEqual(
+            {"This": "that", "The": "other"}, webhook.parse_header_conf(header_conf)
+        )
+
+    def test_empty_string(self) -> None:
+        self.assertEqual({}, webhook.parse_header_conf(""))
+
+    def test_empty_value(self) -> None:
+        header_conf = "This=that|The="
+
+        self.assertEqual(
+            {"This": "that", "The": ""}, webhook.parse_header_conf(header_conf)
+        )
+
+    def test_missing_equals(self) -> None:
+        header_conf = "This=that|Theother"
+
+        with self.assertRaises(ValueError) as exc_info:
+            webhook.parse_header_conf(header_conf)
+
+        error = exc_info.exception
+
+        self.assertEqual(f"Invalid header spec: {header_conf!r}", str(error))
+
+    def test_duplicate(self) -> None:
+        header_conf = "This=that|THIS=other"
+
+        self.assertEqual({"THIS": "other"}, webhook.parse_header_conf(header_conf))
+
+    def test_empty_header_name(self) -> None:
+        header_conf = "=that"
+
+        with self.assertRaises(ValueError) as exc_info:
+            webhook.parse_header_conf(header_conf)
+
+        error = exc_info.exception
+
+        self.assertEqual(f"Invalid header spec: {header_conf!r}", str(error))
