@@ -64,9 +64,10 @@ def parse_config(config: str) -> tuple[str, CaseInsensitiveDict[str]]:
     first, which is the URL to of the webhook.  Subsequent items are headers to include
     in the request.
 
-    Return a tuple of (url, headers) where headers list of 2-tuples.  For example::
+    Return a tuple of (url, headers) where headers is a case-insensitive dict of
+    2-tuples.  For example::
 
-        ("https://host.invalid/webook, [("X-Header-A", "foo"), ("X-Header-B", "bar")])
+        ("https://host.invalid/webook, {"X-Header-A": "foo", "X-Header-B": "bar"})
     """
     url, _, header_conf = config.partition("|")
 
@@ -78,7 +79,7 @@ def parse_config(config: str) -> tuple[str, CaseInsensitiveDict[str]]:
 def parse_header_conf(header_conf: str) -> CaseInsensitiveDict[str]:
     """Parse the header portion of the webhook config.
 
-    Return a list of 2-tuples.
+    Return a case-insensitive dict.
     """
     if not header_conf:
         return CaseInsensitiveDict()
