@@ -1,6 +1,6 @@
 """Webhook NotificationMethod"""
 
-from typing import Any, cast
+from typing import Any, Iterable, cast
 
 import orjson
 from gentoo_build_publisher.settings import Settings as GBPSettings
@@ -81,17 +81,33 @@ def parse_header_conf(header_conf: str) -> CaseInsensitiveDict[str]:
 
     Return a case-insensitive dict.
     """
-    headers: CaseInsensitiveDict[str] = CaseInsensitiveDict()
+    return CaseInsensitiveDict(
+        (key, value)
+        for part in get_header_assignments(header_conf)
+        for key, value in [parse_assignment(part)]
+    )
 
-    for part in header_conf.split("|"):
-        if part := part.strip():
-            key, equals, value = part.partition("=")
-            key = key.rstrip()
-            value = value.lstrip()
 
-            if not (key and equals):
-                raise ValueError(f"Invalid header spec: {header_conf!r}")
+def get_header_assignments(header_conf: str) -> Iterable[str]:
+    """Split header_conf into it's parts.
 
-            headers[key] = value
+    For example::
+        >>> header_conf = "One=1 |Two=2|Three=3|"
+        >>> list(get_header_assignments(header_conf))
+        ['One=1', 'Two=2', 'Three=3']
+    """
+    for item in header_conf.split("|"):
+        if item := item.strip():
+            yield item
 
-    return headers
+
+def parse_assignment(header_assignment: str) -> tuple[str, str]:
+    """Parse "name=value" string into (name, value)"""
+    name, equals, value = header_assignment.partition("=")
+    name = name.rstrip()
+    value = value.lstrip()
+
+    if not (name and equals):
+        raise ValueError(f"Invalid header assignment: {header_assignment!r}")
+
+    return name, value

@@ -130,7 +130,7 @@ class ParseHeaderConfTests(TestCase):
 
         error = exc_info.exception
 
-        self.assertEqual(f"Invalid header spec: {header_conf!r}", str(error))
+        self.assertEqual("Invalid header assignment: 'Theother'", str(error))
 
     def test_duplicate(self) -> None:
         header_conf = "This=that|THIS=other"
@@ -145,4 +145,4 @@ class ParseHeaderConfTests(TestCase):
 
         error = exc_info.exception
 
-        self.assertEqual(f"Invalid header spec: {header_conf!r}", str(error))
+        self.assertEqual(f"Invalid header assignment: {header_conf!r}", str(error))
