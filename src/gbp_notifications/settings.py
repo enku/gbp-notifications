@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     EMAIL_SMTP_USERNAME: str = ""
     EMAIL_SMTP_PASSWORD: str = ""
     EMAIL_SMTP_PASSWORD_FILE: str = ""
+    REQUESTS_TIMEOUT: int = 10
 
     @classmethod
     def from_dict(cls, prefix: str, data_dict: dict[str, t.Any]) -> t.Self:

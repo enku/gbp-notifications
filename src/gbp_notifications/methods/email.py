@@ -8,6 +8,7 @@ from gentoo_build_publisher.settings import Settings as GBPSettings
 from gentoo_build_publisher.types import GBPMetadata
 from gentoo_build_publisher.worker import Worker
 
+from gbp_notifications import tasks
 from gbp_notifications.exceptions import TemplateNotFoundError
 from gbp_notifications.settings import Settings
 from gbp_notifications.templates import load_template, render_template
@@ -31,7 +32,7 @@ class EmailMethod:  # pylint: disable=too-few-public-methods
         """Notify the given Recipient of the given Event"""
         if msg := self.create_message(event, recipient):
             worker = Worker(GBPSettings.from_environ())
-            worker.run(sendmail, msg["From"], [msg["To"]], msg.as_string())
+            worker.run(tasks.sendmail, msg["From"], [msg["To"]], msg.as_string())
 
     def create_message(self, event: Event, recipient: Recipient) -> EmailMessage | None:
         """Return the email message for the recipient
@@ -65,23 +66,6 @@ def set_headers(msg: EmailMessage, **headers: str) -> EmailMessage:
         msg[name] = value
 
     return msg
-
-
-def sendmail(from_addr: str, to_addrs: list[str], msg: str) -> None:
-    """Worker function to sent the email message"""
-    # pylint: disable=reimported,import-outside-toplevel,redefined-outer-name,import-self
-    import smtplib
-
-    from gbp_notifications.methods.email import logger
-    from gbp_notifications.settings import Settings
-
-    config = Settings.from_environ()
-
-    logger.info("Sending email notification to %s", to_addrs)
-    with smtplib.SMTP_SSL(config.EMAIL_SMTP_HOST, port=config.EMAIL_SMTP_PORT) as smtp:
-        smtp.login(config.EMAIL_SMTP_USERNAME, config.EMAIL_SMTP_PASSWORD)
-        smtp.sendmail(from_addr, to_addrs, msg)
-    logger.info("Sent email notification to %s", to_addrs)
 
 
 def generate_email_content(event: Event, recipient: Recipient) -> str:

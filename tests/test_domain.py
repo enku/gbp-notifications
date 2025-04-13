@@ -10,7 +10,7 @@ from . import TestCase
 class DomainTests(TestCase):
     """Tests for the general domain"""
 
-    @mock.patch("gbp_notifications.methods.email.sendmail")
+    @mock.patch("gbp_notifications.tasks.sendmail")
     def test(self, mock_sendmail: mock.Mock) -> None:
         build = Build(machine="babette", build_id="666")
 

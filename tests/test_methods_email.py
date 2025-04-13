@@ -5,6 +5,7 @@ from unittest import mock
 
 from gentoo_build_publisher.types import Build, GBPMetadata, Package, PackageMetadata
 
+from gbp_notifications import tasks
 from gbp_notifications.methods import email
 from gbp_notifications.settings import Settings
 from gbp_notifications.types import Event, Recipient, Subscription
@@ -38,7 +39,7 @@ class SendTests(TestCase):
         self.assertEqual(
             args,
             (
-                email.sendmail,
+                tasks.sendmail,
                 "gbp@host.invalid",
                 ["marduk <marduk@host.invalid>"],
                 self.msg,
@@ -59,22 +60,6 @@ class SendTests(TestCase):
         mock_logger.warning.assert_called_once_with(
             "No template found for event: %s", "bogus"
         )
-
-
-class SendmailTests(TestCase):
-    @mock.patch("smtplib.SMTP_SSL")
-    def test(self, mock_smtp) -> None:
-        from_addr = "from@host.invalid"
-        to_addr = "to@host.invalid"
-        msg = "This is a test"
-
-        email.sendmail(from_addr, [to_addr], msg)
-
-        mock_smtp.assert_called_once_with("smtp.email.invalid", port=465)
-
-        smtp = mock_smtp.return_value.__enter__.return_value
-        smtp.login.assert_called_once_with("marduk@host.invalid", "supersecret")
-        smtp.sendmail.assert_called_once_with(from_addr, [to_addr], msg)
 
 
 class GenerateEmailContentTests(TestCase):

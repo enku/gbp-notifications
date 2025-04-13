@@ -5,7 +5,13 @@ import collections
 import unittest
 
 from gbp_notifications.types import Recipient
-from gbp_notifications.utils import find_subscribers, sort_items_by, split_string_by
+from gbp_notifications.utils import (
+    find_subscribers,
+    parse_config,
+    parse_header_conf,
+    sort_items_by,
+    split_string_by,
+)
 
 
 class SplitStringByTests(unittest.TestCase):
@@ -67,3 +73,66 @@ class SortItemsByTests(unittest.TestCase):
         self.assertEqual(
             [Bag(0, 4), Bag(2, 8), Bag(3, 6), Bag(9, 1)], sort_items_by(bags, "spam")
         )
+
+
+class ParseConfigTests(unittest.TestCase):
+    def test_url_only(self) -> None:
+        result = parse_config("http://host.invalid/webhook")
+
+        self.assertEqual(result, ("http://host.invalid/webhook", {}))
+
+    def test_headers(self) -> None:
+        result = parse_config("http://host.invalid/webhook|This=that|The=other")
+
+        self.assertEqual(
+            result, ("http://host.invalid/webhook", {"This": "that", "The": "other"})
+        )
+
+    def test_delim_but_no_header(self) -> None:
+        result = parse_config("http://host.invalid/webhook|")
+
+        self.assertEqual(result, ("http://host.invalid/webhook", {}))
+
+
+class ParseHeaderConfTests(unittest.TestCase):
+    """Tests for parse_header_conf()"""
+
+    def test(self) -> None:
+        header_conf = "This=that|The=other"
+
+        self.assertEqual(
+            {"This": "that", "The": "other"}, parse_header_conf(header_conf)
+        )
+
+    def test_empty_string(self) -> None:
+        self.assertEqual({}, parse_header_conf(""))
+
+    def test_empty_value(self) -> None:
+        header_conf = "This=that|The="
+
+        self.assertEqual({"This": "that", "The": ""}, parse_header_conf(header_conf))
+
+    def test_missing_equals(self) -> None:
+        header_conf = "This=that|Theother"
+
+        with self.assertRaises(ValueError) as exc_info:
+            parse_header_conf(header_conf)
+
+        error = exc_info.exception
+
+        self.assertEqual("Invalid header assignment: 'Theother'", str(error))
+
+    def test_duplicate(self) -> None:
+        header_conf = "This=that|THIS=other"
+
+        self.assertEqual({"THIS": "other"}, parse_header_conf(header_conf))
+
+    def test_empty_header_name(self) -> None:
+        header_conf = "=that"
+
+        with self.assertRaises(ValueError) as exc_info:
+            parse_header_conf(header_conf)
+
+        error = exc_info.exception
+
+        self.assertEqual(f"Invalid header assignment: {header_conf!r}", str(error))

@@ -8,6 +8,7 @@ from unittest import mock
 from gentoo_build_publisher.types import Build, GBPMetadata, Package, PackageMetadata
 from unittest_fixtures import Fixtures, given, where
 
+from gbp_notifications import tasks
 from gbp_notifications.methods import webhook
 from gbp_notifications.signals import send_event_to_recipients
 from gbp_notifications.types import Event, Recipient
@@ -49,23 +50,8 @@ class SendTests(TestCase):
         worker.return_value.run.assert_called_once()
         args, kwargs = worker.return_value.run.call_args
         body = webhook.create_body(self.event, mock.Mock(spec=Recipient))
-        self.assertEqual(args, (webhook.send_request, "marduk", body))
+        self.assertEqual(args, (tasks.send_http_request, "marduk", body))
         self.assertEqual(kwargs, {})
-
-
-@given("environ", "imports")
-@where(environ=ENVIRON, imports=["requests"])
-class SendRequestTests(TestCase):
-    def test(self, fixtures: Fixtures) -> None:
-        webhook.send_request("marduk", '{"this": "that"}')
-
-        requests = fixtures.imports["requests"]
-        requests.post.assert_called_once_with(
-            "http://host.invalid/webhook",
-            data='{"this": "that"}',
-            headers={"X-Pre-Shared-Key": "1234", "Content-Type": "application/json"},
-            timeout=webhook.REQUEST_TIMEOUT,
-        )
 
 
 class CreateBodyTests(TestCase):
@@ -81,68 +67,3 @@ class CreateBodyTests(TestCase):
             "data": {"build": {"build_id": "30557", "machine": "polaris"}},
         }
         self.assertEqual(expected, json.loads(body))
-
-
-class ParseConfigTests(TestCase):
-    def test_url_only(self) -> None:
-        result = webhook.parse_config("http://host.invalid/webhook")
-
-        self.assertEqual(result, ("http://host.invalid/webhook", {}))
-
-    def test_headers(self) -> None:
-        result = webhook.parse_config("http://host.invalid/webhook|This=that|The=other")
-
-        self.assertEqual(
-            result, ("http://host.invalid/webhook", {"This": "that", "The": "other"})
-        )
-
-    def test_delim_but_no_header(self) -> None:
-        result = webhook.parse_config("http://host.invalid/webhook|")
-
-        self.assertEqual(result, ("http://host.invalid/webhook", {}))
-
-
-class ParseHeaderConfTests(TestCase):
-    """Tests for webhook.parse_header_conf()"""
-
-    def test(self) -> None:
-        header_conf = "This=that|The=other"
-
-        self.assertEqual(
-            {"This": "that", "The": "other"}, webhook.parse_header_conf(header_conf)
-        )
-
-    def test_empty_string(self) -> None:
-        self.assertEqual({}, webhook.parse_header_conf(""))
-
-    def test_empty_value(self) -> None:
-        header_conf = "This=that|The="
-
-        self.assertEqual(
-            {"This": "that", "The": ""}, webhook.parse_header_conf(header_conf)
-        )
-
-    def test_missing_equals(self) -> None:
-        header_conf = "This=that|Theother"
-
-        with self.assertRaises(ValueError) as exc_info:
-            webhook.parse_header_conf(header_conf)
-
-        error = exc_info.exception
-
-        self.assertEqual("Invalid header assignment: 'Theother'", str(error))
-
-    def test_duplicate(self) -> None:
-        header_conf = "This=that|THIS=other"
-
-        self.assertEqual({"THIS": "other"}, webhook.parse_header_conf(header_conf))
-
-    def test_empty_header_name(self) -> None:
-        header_conf = "=that"
-
-        with self.assertRaises(ValueError) as exc_info:
-            webhook.parse_header_conf(header_conf)
-
-        error = exc_info.exception
-
-        self.assertEqual(f"Invalid header assignment: {header_conf!r}", str(error))
