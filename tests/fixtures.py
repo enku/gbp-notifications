@@ -11,6 +11,7 @@ from gbp_testkit import fixtures as testkit
 from gentoo_build_publisher.types import Build, GBPMetadata, Package, PackageMetadata
 from unittest_fixtures import FixtureContext, Fixtures, fixture
 
+from gbp_notifications.methods import email
 from gbp_notifications.types import Event
 
 environ = testkit.environ
@@ -80,3 +81,9 @@ def event(
             "gbp_metadata": fixtures.gbp_metadata,
         },
     )
+
+
+@fixture()
+def logger(_fixtures: Fixtures, target=email) -> FixtureContext[mock.Mock]:
+    with mock.patch.object(target, "logger") as mock_logger:
+        yield mock_logger

@@ -2,7 +2,6 @@
 
 # pylint: disable=missing-docstring
 from dataclasses import replace
-from unittest import mock
 
 from unittest_fixtures import Fixtures, given, where
 
@@ -14,7 +13,7 @@ from gbp_notifications.types import Recipient, Subscription
 from . import TestCase
 
 
-@given("event", "worker")
+@given("event", "worker", "logger")
 @where(worker__target=email)
 class SendTests(TestCase):
     """Tests for the EmailMethod.send method"""
@@ -39,8 +38,7 @@ class SendTests(TestCase):
         )
         self.assertEqual(kwargs, {})
 
-    @mock.patch.object(email, "logger")
-    def test_with_missing_template(self, mock_logger, fixtures: Fixtures) -> None:
+    def test_with_missing_template(self, fixtures: Fixtures) -> None:
         event = replace(fixtures.event, name="bogus")
         settings = Settings(
             RECIPIENTS=(self.recipient,),
@@ -51,7 +49,7 @@ class SendTests(TestCase):
         method.send(event, self.recipient)
 
         fixtures.worker.return_value.run.assert_not_called()
-        mock_logger.warning.assert_called_once_with(
+        fixtures.logger.warning.assert_called_once_with(
             "No template found for event: %s", "bogus"
         )
 
