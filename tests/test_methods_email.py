@@ -4,7 +4,7 @@
 from dataclasses import replace
 from unittest import mock
 
-from unittest_fixtures import Fixtures, given
+from unittest_fixtures import Fixtures, given, where
 
 from gbp_notifications import tasks
 from gbp_notifications.methods import email
@@ -14,14 +14,14 @@ from gbp_notifications.types import Recipient, Subscription
 from . import TestCase
 
 
-@given("event")
-@mock.patch.object(email, "Worker")
+@given("event", "worker")
+@where(worker__target=email)
 class SendTests(TestCase):
     """Tests for the EmailMethod.send method"""
 
     recipient = Recipient(name="marduk", config={"email": "marduk@host.invalid"})
 
-    def test(self, mock_worker, fixtures: Fixtures) -> None:
+    def test(self, fixtures: Fixtures) -> None:
         settings = Settings(
             RECIPIENTS=(self.recipient,),
             SUBSCRIPTIONS={fixtures.event: Subscription([self.recipient])},
@@ -31,8 +31,8 @@ class SendTests(TestCase):
         method.send(fixtures.event, self.recipient)
         msg = method.compose(fixtures.event, self.recipient).as_string()
 
-        mock_worker.return_value.run.assert_called_once()
-        args, kwargs = mock_worker.return_value.run.call_args
+        fixtures.worker.return_value.run.assert_called_once()
+        args, kwargs = fixtures.worker.return_value.run.call_args
         self.assertEqual(
             args,
             (tasks.sendmail, "gbp@host.invalid", ["marduk <marduk@host.invalid>"], msg),
@@ -40,9 +40,7 @@ class SendTests(TestCase):
         self.assertEqual(kwargs, {})
 
     @mock.patch.object(email, "logger")
-    def test_with_missing_template(
-        self, mock_logger, mock_worker, fixtures: Fixtures
-    ) -> None:
+    def test_with_missing_template(self, mock_logger, fixtures: Fixtures) -> None:
         event = replace(fixtures.event, name="bogus")
         settings = Settings(
             RECIPIENTS=(self.recipient,),
@@ -52,7 +50,7 @@ class SendTests(TestCase):
         method = email.EmailMethod(settings)
         method.send(event, self.recipient)
 
-        mock_worker.return_value.run.assert_not_called()
+        fixtures.worker.return_value.run.assert_not_called()
         mock_logger.warning.assert_called_once_with(
             "No template found for event: %s", "bogus"
         )
