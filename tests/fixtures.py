@@ -3,11 +3,15 @@
 # pylint: disable=missing-docstring,redefined-outer-name
 
 from importlib import import_module
+from typing import Any
 from unittest import mock
 
 import gentoo_build_publisher.worker
 from gbp_testkit import fixtures as testkit
+from gentoo_build_publisher.types import Build, GBPMetadata, Package, PackageMetadata
 from unittest_fixtures import FixtureContext, Fixtures, fixture
+
+from gbp_notifications.types import Event
 
 environ = testkit.environ
 tmpdir = testkit.tmpdir
@@ -37,3 +41,42 @@ def imports(
 
     with mock.patch("builtins.__import__", side_effect=side_effect):
         yield imported
+
+
+@fixture()
+def package(_fixtures: Fixtures, **options: Any) -> Package:
+    return Package(
+        build_id=1,
+        build_time=0,
+        cpv="llvm-core/clang-20.1.3",
+        repo="gentoo",
+        path="lvm-core/clang/clang-20.1.3-1.gpkg.tar",
+        size=238592,
+        **options,
+    )
+
+
+@fixture("package")
+def packages(fixtures: Fixtures) -> PackageMetadata:
+    package: Package = fixtures.package
+    return PackageMetadata(total=1, size=package.size, built=[package])
+
+
+@fixture("packages")
+def gbp_metadata(fixtures: Fixtures, build_duration: int = 3600) -> GBPMetadata:
+    packages: PackageMetadata = fixtures.packages
+    return GBPMetadata(build_duration=build_duration, packages=packages)
+
+
+@fixture("gbp_metadata")
+def event(
+    fixtures: Fixtures, name: str = "build_pulled", machine: str = "polaris"
+) -> Event:
+    return Event(
+        name=name,
+        machine=machine,
+        data={
+            "build": Build(machine=machine, build_id="31536"),
+            "gbp_metadata": fixtures.gbp_metadata,
+        },
+    )
