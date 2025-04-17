@@ -25,7 +25,7 @@ ENVIRON = {
 @given("environ", "worker")
 @where(environ=ENVIRON, worker__target=webhook)
 class SendTests(TestCase):
-    """Tests for the EmailMethod.send method"""
+    """Tests for the WebhookMethod.send method"""
 
     package = Package(
         build_id=1,
