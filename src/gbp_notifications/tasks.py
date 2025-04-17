@@ -41,3 +41,28 @@ def send_http_request(recipient_name: str, body: str) -> None:
         url, data=body, headers=headers, timeout=settings.REQUESTS_TIMEOUT
     ).raise_for_status()
     logger.info("Sent webhook notification to %s", url)
+
+
+def send_pushover_notification(device: str, title: str, message: str) -> None:
+    """Use the given params to send a Pushover notification
+
+    params is a dict of parameters as specified by the Pushover Message API.
+
+    https://pushover.net/api
+    """
+    # pylint: disable=reimported,import-outside-toplevel,redefined-outer-name,import-self
+    import requests
+
+    from gbp_notifications.methods.pushover import URL
+    from gbp_notifications.settings import Settings
+
+    settings = Settings.from_environ()
+    params = {
+        "token": settings.PUSHOVER_APP_TOKEN,
+        "user": settings.PUSHOVER_USER_KEY,
+        "device": device,
+        "title": title,
+        "message": message,
+    }
+    response = requests.post(URL, json=params, timeout=settings.REQUESTS_TIMEOUT)
+    response.raise_for_status()

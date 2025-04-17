@@ -8,9 +8,10 @@ from unittest import mock
 from unittest_fixtures import Fixtures, given, where
 
 from gbp_notifications import tasks
+from gbp_notifications.methods import pushover
 from gbp_notifications.settings import Settings
 
-from . import TestCase
+from . import PUSHOVER_ENVIRON, PUSHOVER_PARAMS, TestCase
 
 ENVIRON = {
     "GBP_NOTIFICATIONS_RECIPIENTS": "marduk"
@@ -48,4 +49,22 @@ class SendHTTPRequestTests(TestCase):
             data='{"this": "that"}',
             headers={"X-Pre-Shared-Key": "1234", "Content-Type": "application/json"},
             timeout=settings.REQUESTS_TIMEOUT,
+        )
+
+
+@given("environ", "imports")
+@where(environ=PUSHOVER_ENVIRON, imports=["requests"])
+class SendPushoverNotificationTests(TestCase):
+    def test(self, fixtures: Fixtures) -> None:
+        settings = Settings.from_environ()
+
+        tasks.send_pushover_notification(
+            PUSHOVER_PARAMS["device"],
+            PUSHOVER_PARAMS["title"],
+            PUSHOVER_PARAMS["message"],
+        )
+
+        requests = fixtures.imports["requests"]
+        requests.post.assert_called_once_with(
+            pushover.URL, json=PUSHOVER_PARAMS, timeout=settings.REQUESTS_TIMEOUT
         )

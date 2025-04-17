@@ -128,3 +128,31 @@ Webhooks might be used, for example, to automatically update machines whenever
 a new build is published. Or perhaps a desktop notification:
 
 ![screenshot](https://raw.githubusercontent.com/enku/screenshots/refs/heads/master/gbp-notifications/desktop-notification.png)
+
+
+## Pushover method
+
+[Pushover](https://pushover.net/) is a service that allows apps to send push
+notifications to mobile and other devices. gbp-notifications supports the Pushover
+service.  To enable gbp-notifications to sent Pushover notifications you'll need to
+create a user account as well as app key for your GBP instance. Then define the
+following denvironment variables:
+
+```sh
+# /etc/gentoo-build-publisher.conf
+
+
+GBP_NOTIFICATIONS_PUSHOVER_USER_KEY="[Pushover user key]",
+GBP_NOTIFICATIONS_PUSHOVER_APP_TOKEN"="[Pushover app token]",
+```
+
+Pushover subscriptions will look like this:
+
+```sh
+GBP_NOTIFICATIONS_RECIPIENTS="marduk:pushover=iphone16pro",
+GBP_NOTIFICATIONS_SUBSCRIPTIONS="*.build_pulled=marduk"
+```
+
+Replacing `"iphone16pro"` with the device name you've registered with Pushover.
+
+![screenshot](https://raw.githubusercontent.com/enku/screenshots/refs/heads/master/gbp-notifications/pushover.png)

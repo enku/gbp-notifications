@@ -32,6 +32,10 @@ class Settings(BaseSettings):
     EMAIL_SMTP_PASSWORD_FILE: str = ""
     REQUESTS_TIMEOUT: int = 10
 
+    # Pushover
+    PUSHOVER_USER_KEY: str = ""
+    PUSHOVER_APP_TOKEN: str = ""
+
     @classmethod
     def from_dict(cls, prefix: str, data_dict: dict[str, t.Any]) -> t.Self:
         data = data_dict.copy()
