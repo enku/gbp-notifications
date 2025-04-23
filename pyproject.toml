@@ -34,9 +34,6 @@ webhook = "gbp_notifications.methods.webhook:WebhookMethod"
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
 
-[tool.pdm]
-version = { source = "scm" }
-
 [tool.coverage.run]
 source = ["gbp_notifications"]
 omit = ["src/gbp_notifications/migrations/*"]
@@ -58,6 +55,10 @@ init-hook = "import sys; sys.path.insert(0, 'tests')"
 bad-functions = "print"
 ignore = ["/migrations/"]
 
+
+[tool.pdm]
+version = { source = "scm" }
+
 [dependency-groups]
 dev = [
     "pylint>=3.0.3",
@@ -67,7 +68,7 @@ dev = [
     "mypy>=1.7.1",
     "django-stubs>=4.2.7",
     "black>=23.12.0",
-    "gbp-testkit @ git+https://github.com/enku/gbp-testkit.git@master",
+    "gentoo-build-publisher[dev] @ git+https://github.com/enku/gentoo-build-publisher.git@master",
 ]
 
 [tool.isort]
