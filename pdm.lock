@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:2fa9e53e5466f5a142faf79e1ae4bfba72c85072bd49cf5a54757bdb28e49705"
+content_hash = "sha256:bed5e5ff64b54d8f4bea1ec09dff83430436321474bad6144da058e1d5c3f16d"
 
 [[metadata.targets]]
 requires_python = ">=3.11"
@@ -673,7 +673,7 @@ summary = "Gentoo Build Publisher"
 groups = ["dev"]
 dependencies = [
     "factory-boy>=3.3.3",
-    "gentoo-build-publisher @ git+https://github.com/enku/gentoo-build-publisher.git@master",
+    "gentoo-build-publisher @ git+https://github.com/enku/gentoo-build-publisher.git@c958b4595c54a6e230233d0e41d9b4cf54b6970f",
     "unittest-fixtures",
 ]
 
@@ -1385,6 +1385,20 @@ groups = ["dev"]
 files = [
     {file = "types_pyyaml-6.0.12.20250402-py3-none-any.whl", hash = "sha256:652348fa9e7a203d4b0d21066dfb00760d3cbd5a15ebb7cf8d33c88a49546681"},
     {file = "types_pyyaml-6.0.12.20250402.tar.gz", hash = "sha256:d7c13c3e6d335b6af4b0122a01ff1d270aba84ab96d1a1a1063ecba3e13ec075"},
+]
+
+[[package]]
+name = "types-requests"
+version = "2.32.0.20250328"
+requires_python = ">=3.9"
+summary = "Typing stubs for requests"
+groups = ["dev"]
+dependencies = [
+    "urllib3>=2",
+]
+files = [
+    {file = "types_requests-2.32.0.20250328-py3-none-any.whl", hash = "sha256:72ff80f84b15eb3aa7a8e2625fffb6a93f2ad5a0c20215fc1dcfa61117bcb2a2"},
+    {file = "types_requests-2.32.0.20250328.tar.gz", hash = "sha256:c9e67228ea103bd811c96984fac36ed2ae8da87a36a633964a21f199d60baf32"},
 ]
 
 [[package]]
