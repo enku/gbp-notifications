@@ -6,7 +6,7 @@ from django.apps import AppConfig
 class GBPNotificationsConfig(AppConfig):
     """AppConfig for gbp-notifications"""
 
-    name = "gbp_notifications"
+    name = "gbp_notifications.django.gbp_notifications"
     verbose_name = "GBP-notifications"
     default_auto_field = "django.db.models.BigAutoField"
 
