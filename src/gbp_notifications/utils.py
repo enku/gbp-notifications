@@ -25,9 +25,7 @@ def find_subscribers(
     recipients: Iterable["Recipient"], recipient_names: Collection[str]
 ) -> set["Recipient"]:
     """Given the recipients return a subset of the recipients with the given names"""
-    return set(
-        recipient for recipient in recipients if recipient.name in recipient_names
-    )
+    return set(item for item in recipients if item.name in recipient_names)
 
 
 _T = TypeVar("_T")
