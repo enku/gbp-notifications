@@ -79,9 +79,7 @@ def get_header_assignments(header_conf: str) -> Iterable[str]:
         >>> list(get_header_assignments(header_conf))
         ['One=1', 'Two=2', 'Three=3']
     """
-    for item in header_conf.split("|"):
-        if item := item.strip():
-            yield item
+    return (item for item in header_conf.split("|") if item.strip())
 
 
 def parse_assignment(header_assignment: str) -> tuple[str, str]:
