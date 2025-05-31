@@ -11,6 +11,15 @@ builds pulled.
 </p>
 
 
+gbp-notifications supports the following built-in notification methods:
+
+- email
+- webhook
+- pushover
+
+Other notification methods can be added via a plugin system.
+
+
 # Installation
 
 This assumes you already have a working Gentoo Build Publisher installation.
