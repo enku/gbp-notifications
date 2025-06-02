@@ -8,14 +8,14 @@ def sendmail(from_addr: str, to_addrs: list[str], msg: str) -> None:
     # pylint: disable=reimported,import-outside-toplevel,redefined-outer-name,import-self
     import smtplib
 
-    from gbp_notifications.methods.email import logger
+    from gbp_notifications.methods.email import email_password, logger
     from gbp_notifications.settings import Settings
 
     config = Settings.from_environ()
 
     logger.info("Sending email notification to %s", to_addrs)
     with smtplib.SMTP_SSL(config.EMAIL_SMTP_HOST, port=config.EMAIL_SMTP_PORT) as smtp:
-        smtp.login(config.EMAIL_SMTP_USERNAME, config.EMAIL_SMTP_PASSWORD)
+        smtp.login(config.EMAIL_SMTP_USERNAME, email_password(config))
         smtp.sendmail(from_addr, to_addrs, msg)
     logger.info("Sent email notification to %s", to_addrs)
 
