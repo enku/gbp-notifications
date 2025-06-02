@@ -14,29 +14,6 @@ from . import TestCase
 
 @given()
 class SettingTests(TestCase):
-    def test_email_password_string(self, fixtures: Fixtures) -> None:
-        settings = Settings(EMAIL_SMTP_PASSWORD="foobar")
-
-        self.assertEqual(settings.email_password, "foobar")
-
-    def test_email_password_from_file(self, fixtures: Fixtures) -> None:
-        pw_file = Path(fixtures.tmpdir, "password")
-        pw_file.write_text("foobar", encoding="UTF-8")
-
-        settings = Settings(EMAIL_SMTP_PASSWORD_FILE=str(pw_file))
-
-        self.assertEqual(settings.email_password, "foobar")
-
-    def test_email_password_prefer_file(self, fixtures: Fixtures) -> None:
-        pw_file = Path(fixtures.tmpdir, "password")
-        pw_file.write_text("file", encoding="UTF-8")
-
-        settings = Settings(
-            EMAIL_SMTP_PASSWORD="string", EMAIL_SMTP_PASSWORD_FILE=str(pw_file)
-        )
-
-        self.assertEqual(settings.email_password, "file")
-
     def test_subs_and_reps_from_file(self, fixtures: Fixtures) -> None:
         toml = """\
 [recipients]

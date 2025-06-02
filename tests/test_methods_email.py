@@ -1,7 +1,8 @@
 """Tests for the methods.email module"""
 
-# pylint: disable=missing-docstring
+# pylint: disable=missing-docstring,unused-argument
 from dataclasses import replace
+from pathlib import Path
 
 from unittest_fixtures import Fixtures, given, where
 
@@ -62,3 +63,29 @@ class GenerateEmailContentTests(TestCase):
         result = email.generate_email_content(fixtures.event, recipient)
 
         self.assertIn(f"• {fixtures.package.cpv}", result)
+
+
+@given("tmpdir")
+class EmailPasswordTests(TestCase):
+    def test_email_password_string(self, fixtures: Fixtures) -> None:
+        settings = Settings(EMAIL_SMTP_PASSWORD="foobar")
+
+        self.assertEqual(email.email_password(settings), "foobar")
+
+    def test_email_password_from_file(self, fixtures: Fixtures) -> None:
+        pw_file = Path(fixtures.tmpdir, "password")
+        pw_file.write_text("foobar", encoding="UTF-8")
+
+        settings = Settings(EMAIL_SMTP_PASSWORD_FILE=str(pw_file))
+
+        self.assertEqual(email.email_password(settings), "foobar")
+
+    def test_email_password_prefer_file(self, fixtures: Fixtures) -> None:
+        pw_file = Path(fixtures.tmpdir, "password")
+        pw_file.write_text("file", encoding="UTF-8")
+
+        settings = Settings(
+            EMAIL_SMTP_PASSWORD="string", EMAIL_SMTP_PASSWORD_FILE=str(pw_file)
+        )
+
+        self.assertEqual(email.email_password(settings), "file")

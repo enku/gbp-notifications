@@ -62,10 +62,3 @@ class Settings(BaseSettings):
         if data != data_dict:
             return cls.from_dict(prefix, data)
         return super().from_dict(prefix, data)
-
-    @property
-    def email_password(self) -> str:
-        """Return the email password depending on the settings"""
-        if path := self.EMAIL_SMTP_PASSWORD_FILE:
-            return Path(path).read_text(encoding="UTF-8")
-        return self.EMAIL_SMTP_PASSWORD

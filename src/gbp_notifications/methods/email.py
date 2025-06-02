@@ -3,6 +3,7 @@
 import logging
 from copy import deepcopy
 from email.message import EmailMessage
+from pathlib import Path
 
 from gentoo_build_publisher.settings import Settings as GBPSettings
 from gentoo_build_publisher.types import GBPMetadata
@@ -77,3 +78,10 @@ def generate_email_content(event: Event, recipient: Recipient) -> str:
     context = {"packages": packages, "recipient": recipient, "event": event.data}
 
     return render_template(template, context)
+
+
+def email_password(settings: Settings) -> str:
+    """Return the email password depending on the settings"""
+    if path := settings.EMAIL_SMTP_PASSWORD_FILE:
+        return Path(path).read_text(encoding="UTF-8")
+    return settings.EMAIL_SMTP_PASSWORD
