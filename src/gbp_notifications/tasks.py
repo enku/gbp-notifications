@@ -35,11 +35,10 @@ def send_http_request(recipient_name: str, body: str) -> None:
     url, headers = utils.parse_config(recipient.config["webhook"])
     post = requests.post
     headers["Content-Type"] = "application/json"
+    timeout = settings.REQUESTS_TIMEOUT
 
     logger.info("Sending webook notification to %s", url)
-    post(
-        url, data=body, headers=headers, timeout=settings.REQUESTS_TIMEOUT
-    ).raise_for_status()
+    post(url, data=body, headers=headers, timeout=timeout).raise_for_status()
     logger.info("Sent webhook notification to %s", url)
 
 
