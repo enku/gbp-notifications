@@ -50,15 +50,10 @@ def send_event_to_recipients(event: Event) -> None:
             method(settings).send(event, recipient)
 
 
-def event_recipients(
-    event: Event, subscriptions: dict[Event, Subscription]
-) -> set[Recipient]:
+def event_recipients(event: Event, subs: dict[Event, Subscription]) -> set[Recipient]:
     """Given the subscriptions, return all recipients to the given event"""
-    return {
-        recipient
-        for event in (*wildcard_events(event), event)
-        for recipient in subscriptions.get(event, Subscription())
-    }
+    e = event
+    return {r for e in (*wildcard_events(e), e) for r in subs.get(e, Subscription())}
 
 
 def wildcard_events(event: Event) -> list[Event]:
