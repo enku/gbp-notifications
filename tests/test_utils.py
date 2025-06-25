@@ -57,7 +57,7 @@ class FindSubscribersTests(unittest.TestCase):
         )
 
     def test_bogus_name(self) -> None:
-        subs = find_subscribers(self.recipients, ["bar", "bugus"])
+        subs = find_subscribers(self.recipients, ["bar", "bogus"])
 
         self.assertEqual({Recipient(name="bar", config={})}, subs)
 

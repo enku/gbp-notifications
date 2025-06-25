@@ -1,6 +1,6 @@
 """Pushover notifications
 
-Pushover is a service for sending push notifications to Andriod, IOS and desktop
+Pushover is a service for sending push notifications to Android, IOS and desktop
 devices.
 
 See https://pushover.net
