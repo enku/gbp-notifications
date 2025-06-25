@@ -36,7 +36,7 @@ def sort_items_by(items: Iterable[_T], field: str) -> list[_T]:
     return sorted(items, key=lambda item: getattr(item, field))
 
 
-def parse_config(config: str) -> tuple[str, CaseInsensitiveDict[str]]:
+def parse_webhook_config(config: str) -> tuple[str, CaseInsensitiveDict[str]]:
     """Parse the webhook config into url and headers
 
     The webhook config is a string that looks like this:

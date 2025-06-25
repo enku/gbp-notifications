@@ -32,7 +32,7 @@ def send_http_request(recipient_name: str, body: str) -> None:
 
     settings = Settings.from_environ()
     recipient = Recipient.from_name(recipient_name, settings)
-    url, headers = utils.parse_config(recipient.config["webhook"])
+    url, headers = utils.parse_webhook_config(recipient.config["webhook"])
     post = requests.post
     headers["Content-Type"] = "application/json"
     timeout = settings.REQUESTS_TIMEOUT

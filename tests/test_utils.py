@@ -7,8 +7,8 @@ import unittest
 from gbp_notifications.types import Recipient
 from gbp_notifications.utils import (
     find_subscribers,
-    parse_config,
     parse_header_conf,
+    parse_webhook_config,
     sort_items_by,
     split_string_by,
 )
@@ -75,21 +75,21 @@ class SortItemsByTests(unittest.TestCase):
         )
 
 
-class ParseConfigTests(unittest.TestCase):
+class ParseWebhookConfigTests(unittest.TestCase):
     def test_url_only(self) -> None:
-        result = parse_config("http://host.invalid/webhook")
+        result = parse_webhook_config("http://host.invalid/webhook")
 
         self.assertEqual(result, ("http://host.invalid/webhook", {}))
 
     def test_headers(self) -> None:
-        result = parse_config("http://host.invalid/webhook|This=that|The=other")
+        result = parse_webhook_config("http://host.invalid/webhook|This=that|The=other")
 
         self.assertEqual(
             result, ("http://host.invalid/webhook", {"This": "that", "The": "other"})
         )
 
     def test_delim_but_no_header(self) -> None:
-        result = parse_config("http://host.invalid/webhook|")
+        result = parse_webhook_config("http://host.invalid/webhook|")
 
         self.assertEqual(result, ("http://host.invalid/webhook", {}))
 
