@@ -1,12 +1,12 @@
 """Tests for the signal handlers"""
 
-# pylint: disable=missing-docstring
+# pylint: disable=missing-docstring,unused-argument
 import os
 from unittest import mock
 
 from gentoo_build_publisher.types import Build, GBPMetadata, Package, PackageMetadata
+from unittest_fixtures import Fixtures, given, where
 
-from gbp_notifications.methods import get_method
 from gbp_notifications.signals import dispatcher
 from gbp_notifications.types import Event, Recipient
 
@@ -18,76 +18,78 @@ COMMON_SETTINGS = {
     "GBP_NOTIFICATIONS_RECIPIENTS": "marduk:email=marduk@host.invalid",
 }
 
-
-def settings(**kwargs: str):
-    def wrap(func):
-        mock.patch.dict(os.environ, {**COMMON_SETTINGS, **kwargs}, clear=True)(func)
-
-    return wrap
+environ = os.environ
 
 
+@given("caches", "environ")
+@where(environ=COMMON_SETTINGS, environ__clear=True)
 @mock.patch("gbp_notifications.methods.email.EmailMethod")
 class HandlerTests(TestCase):
-    @settings(GBP_NOTIFICATIONS_SUBSCRIPTIONS="*.build_published=marduk")
-    def test_wildcard_machine(self, mock_get_method: mock.Mock) -> None:
+    def test_wildcard_machine(self, mock_get_method, fixtures: Fixtures) -> None:
+        environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "*.build_published=marduk"
         build = Build(machine="babette", build_id="934")
         event = Event(name="build_published", machine="babette")
         recipient = Recipient(name="marduk", config={"email": "marduk@host.invalid"})
 
-        get_method.cache_clear()
         dispatcher.emit("published", build=build)
 
         mock_get_method.return_value.send.assert_called_once_with(event, recipient)
 
-    @settings(GBP_NOTIFICATIONS_SUBSCRIPTIONS="babette.*=marduk")
-    def test_wildcard_name(self, mock_get_method: mock.Mock) -> None:
+    def test_wildcard_name(
+        self, mock_get_method: mock.Mock, fixtures: Fixtures
+    ) -> None:
+        environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "babette.*=marduk"
         build = Build(machine="babette", build_id="934")
         event = Event(name="build_published", machine="babette")
         recipient = Recipient(name="marduk", config={"email": "marduk@host.invalid"})
 
-        get_method.cache_clear()
         dispatcher.emit("published", build=build)
 
         mock_get_method.return_value.send.assert_called_once_with(event, recipient)
 
-    @settings(
-        GBP_NOTIFICATIONS_SUBSCRIPTIONS="babette.*=marduk *.build_published=marduk"
-    )
-    def test_wildcard_machine_and_name(self, mock_get_method: mock.Mock) -> None:
+    def test_wildcard_machine_and_name(
+        self, mock_get_method: mock.Mock, fixtures: Fixtures
+    ) -> None:
         # Multiple matches should only send one message per recipient
+        environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = (
+            "babette.*=marduk *.build_published=marduk"
+        )
         build = Build(machine="babette", build_id="934")
         event = Event(name="build_published", machine="babette")
         recipient = Recipient(name="marduk", config={"email": "marduk@host.invalid"})
 
-        get_method.cache_clear()
         dispatcher.emit("published", build=build)
 
         mock_get_method.return_value.send.assert_called_once_with(event, recipient)
 
-    @settings(GBP_NOTIFICATIONS_SUBSCRIPTIONS="*.*=marduk")
-    def test_wildcard_double(self, mock_get_method: mock.Mock) -> None:
+    def test_wildcard_double(
+        self, mock_get_method: mock.Mock, fixtures: Fixtures
+    ) -> None:
         # Double wildcard is sent exactly once
+        environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "*.*=marduk"
         build = Build(machine="babette", build_id="934")
         event = Event(name="build_published", machine="babette")
         recipient = Recipient(name="marduk", config={"email": "marduk@host.invalid"})
 
-        get_method.cache_clear()
         dispatcher.emit("published", build=build)
 
         mock_get_method.return_value.send.assert_called_once_with(event, recipient)
 
-    @settings(GBP_NOTIFICATIONS_SUBSCRIPTIONS="*.*=bogus")
-    def test_sub_when_recipient_does_not_exist(self, mock_get_method) -> None:
+    def test_sub_when_recipient_does_not_exist(
+        self, mock_get_method, fixtures: Fixtures
+    ) -> None:
         """When subscription has a non-exisent recipient it doesn't error"""
+        environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "*.*=bogus"
         build = Build(machine="babette", build_id="934")
 
-        get_method.cache_clear()
         dispatcher.emit("published", build=build)
 
         mock_get_method.return_value.send.assert_not_called()
 
     @mock.patch("gbp_notifications.signals.send_event_to_recipients")
-    def test_sends_event_data(self, send_event_to_recipients, _mock_get_method) -> None:
+    def test_sends_event_data(
+        self, send_event_to_recipients, _mock_get_method, fixtures: Fixtures
+    ) -> None:
         build = Build(machine="babette", build_id="934")
         package = Package(
             build_id=1,
