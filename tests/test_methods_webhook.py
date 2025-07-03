@@ -5,6 +5,7 @@
 import json
 from unittest import mock
 
+from gbp_testkit import fixtures as testkit
 from unittest_fixtures import Fixtures, given, where
 
 from gbp_notifications import tasks
@@ -12,7 +13,8 @@ from gbp_notifications.methods import webhook
 from gbp_notifications.signals import send_event_to_recipients
 from gbp_notifications.types import Recipient
 
-from . import TestCase
+from . import fixtures as tf
+from .lib import TestCase
 
 ENVIRON = {
     "GBP_NOTIFICATIONS_RECIPIENTS": "marduk"
@@ -21,7 +23,7 @@ ENVIRON = {
 }
 
 
-@given("environ", "worker", "event")
+@given(testkit.environ, tf.worker, tf.event)
 @where(environ=ENVIRON, worker__target=webhook)
 class SendTests(TestCase):
     """Tests for the WebhookMethod.send method"""
@@ -39,7 +41,7 @@ class SendTests(TestCase):
         self.assertEqual(kwargs, {})
 
 
-@given("event")
+@given(tf.event)
 class CreateBodyTests(TestCase):
     def test(self, fixtures: Fixtures) -> None:
         body = webhook.create_body(fixtures.event, mock.Mock())

@@ -4,13 +4,15 @@
 import os
 from unittest import mock
 
+from gbp_testkit import fixtures as testkit
 from gentoo_build_publisher.types import Build, GBPMetadata, Package, PackageMetadata
 from unittest_fixtures import Fixtures, given, where
 
 from gbp_notifications.signals import dispatcher
 from gbp_notifications.types import Event, Recipient
 
-from . import TestCase
+from . import fixtures as tf
+from .lib import TestCase
 
 COMMON_SETTINGS = {
     "BUILD_PUBLISHER_JENKINS_BASE_URL": "https://jenkins.invalid",
@@ -21,7 +23,7 @@ COMMON_SETTINGS = {
 environ = os.environ
 
 
-@given("caches", "environ")
+@given(tf.caches, testkit.environ)
 @where(environ=COMMON_SETTINGS, environ__clear=True)
 @mock.patch("gbp_notifications.methods.email.EmailMethod")
 class HandlerTests(TestCase):

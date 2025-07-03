@@ -14,7 +14,6 @@ from unittest_fixtures import FixtureContext, Fixtures, fixture
 from gbp_notifications.methods import email, get_method
 from gbp_notifications.types import Event
 
-environ = testkit.environ
 tmpdir = testkit.tmpdir
 
 
@@ -57,19 +56,19 @@ def package(_fixtures: Fixtures, **options: Any) -> Package:
     )
 
 
-@fixture("package")
+@fixture(package)
 def packages(fixtures: Fixtures) -> PackageMetadata:
     package: Package = fixtures.package
     return PackageMetadata(total=1, size=package.size, built=[package])
 
 
-@fixture("packages")
+@fixture(packages)
 def gbp_metadata(fixtures: Fixtures, build_duration: int = 3600) -> GBPMetadata:
     packages: PackageMetadata = fixtures.packages
     return GBPMetadata(build_duration=build_duration, packages=packages)
 
 
-@fixture("gbp_metadata")
+@fixture(gbp_metadata)
 def event(
     fixtures: Fixtures, name: str = "build_pulled", machine: str = "polaris"
 ) -> Event:

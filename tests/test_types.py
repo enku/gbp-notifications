@@ -6,7 +6,7 @@ from gbp_notifications.methods.email import EmailMethod
 from gbp_notifications.settings import Settings
 from gbp_notifications.types import Event, Recipient, Subscription
 
-from . import TestCase
+from .lib import TestCase
 
 
 class SubscriptionTests(TestCase):

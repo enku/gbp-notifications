@@ -7,7 +7,7 @@ from gbp_notifications.exceptions import MethodNotFoundError
 from gbp_notifications.methods.email import EmailMethod
 from gbp_notifications.methods.webhook import WebhookMethod
 
-from . import TestCase
+from .lib import TestCase
 
 
 class GetMethodTests(TestCase):

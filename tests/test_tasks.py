@@ -5,13 +5,15 @@
 
 from unittest import mock
 
+from gbp_testkit import fixtures as testkit
 from unittest_fixtures import Fixtures, given, where
 
 from gbp_notifications import tasks
 from gbp_notifications.methods import pushover
 from gbp_notifications.settings import Settings
 
-from . import PUSHOVER_ENVIRON, PUSHOVER_PARAMS, TestCase
+from . import fixtures as tf
+from .lib import PUSHOVER_ENVIRON, PUSHOVER_PARAMS, TestCase
 
 ENVIRON = {
     "GBP_NOTIFICATIONS_RECIPIENTS": "marduk"
@@ -36,7 +38,7 @@ class SendmailTests(TestCase):
         smtp.sendmail.assert_called_once_with(from_addr, [to_addr], msg)
 
 
-@given("environ", "imports")
+@given(testkit.environ, tf.imports)
 @where(environ=ENVIRON, imports=["requests"])
 class SendHTTPRequestTests(TestCase):
     def test(self, fixtures: Fixtures) -> None:
@@ -52,7 +54,7 @@ class SendHTTPRequestTests(TestCase):
         )
 
 
-@given("environ", "imports")
+@given(testkit.environ, tf.imports)
 @where(environ=PUSHOVER_ENVIRON, imports=["requests"])
 class SendPushoverNotificationTests(TestCase):
     def test(self, fixtures: Fixtures) -> None:

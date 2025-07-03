@@ -4,6 +4,7 @@
 from dataclasses import replace
 from pathlib import Path
 
+from gbp_testkit import fixtures as testkit
 from unittest_fixtures import Fixtures, given, where
 
 from gbp_notifications import tasks
@@ -11,10 +12,11 @@ from gbp_notifications.methods import email
 from gbp_notifications.settings import Settings
 from gbp_notifications.types import Recipient, Subscription
 
-from . import TestCase
+from . import fixtures as tf
+from .lib import TestCase
 
 
-@given("event", "worker", "logger")
+@given(tf.event, tf.worker, tf.logger)
 @where(worker__target=email)
 class SendTests(TestCase):
     """Tests for the EmailMethod.send method"""
@@ -55,7 +57,7 @@ class SendTests(TestCase):
         )
 
 
-@given("event", "package")
+@given(tf.event, tf.package)
 class GenerateEmailContentTests(TestCase):
     def test(self, fixtures: Fixtures) -> None:
         recipient = Recipient(name="bob", config={"email": "bob@host.invalid"})
@@ -65,7 +67,7 @@ class GenerateEmailContentTests(TestCase):
         self.assertIn(f"• {fixtures.package.cpv}", result)
 
 
-@given("tmpdir")
+@given(testkit.tmpdir)
 class EmailPasswordTests(TestCase):
     def test_email_password_string(self, fixtures: Fixtures) -> None:
         settings = Settings(EMAIL_SMTP_PASSWORD="foobar")

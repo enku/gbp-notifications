@@ -7,7 +7,7 @@ from jinja2 import Template
 from gbp_notifications.exceptions import TemplateNotFoundError
 from gbp_notifications.templates import load_template, render_template
 
-from . import TestCase
+from .lib import TestCase
 
 
 class LoadTemplateTests(TestCase):

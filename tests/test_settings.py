@@ -9,7 +9,7 @@ from unittest_fixtures import Fixtures, given
 from gbp_notifications.settings import Settings
 from gbp_notifications.types import Event, Recipient, Subscription
 
-from . import TestCase
+from .lib import TestCase
 
 
 @given()
