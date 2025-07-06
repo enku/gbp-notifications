@@ -8,7 +8,9 @@ See https://pushover.net
 
 from typing import Any
 
-from gbp_notifications import tasks, worker
+from gentoo_build_publisher import worker
+
+from gbp_notifications import tasks
 from gbp_notifications.settings import Settings
 from gbp_notifications.types import Event, Recipient
 

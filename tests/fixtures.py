@@ -19,7 +19,7 @@ tmpdir = testkit.tmpdir
 @fixture()
 def worker_run(_fixtures: Fixtures) -> FixtureContext[mock.Mock]:
     """Mock gbp_notifications.worker.run"""
-    with mock.patch("gbp_notifications.worker.run") as mock_obj:
+    with mock.patch("gentoo_build_publisher.worker.run") as mock_obj:
         yield mock_obj
 
 

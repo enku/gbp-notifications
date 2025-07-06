@@ -5,9 +5,10 @@ from copy import deepcopy
 from email.message import EmailMessage
 from pathlib import Path
 
+from gentoo_build_publisher import worker
 from gentoo_build_publisher.types import GBPMetadata
 
-from gbp_notifications import tasks, worker
+from gbp_notifications import tasks
 from gbp_notifications.exceptions import TemplateNotFoundError
 from gbp_notifications.settings import Settings
 from gbp_notifications.templates import load_template, render_template
