@@ -5,11 +5,9 @@ from copy import deepcopy
 from email.message import EmailMessage
 from pathlib import Path
 
-from gentoo_build_publisher.settings import Settings as GBPSettings
 from gentoo_build_publisher.types import GBPMetadata
-from gentoo_build_publisher.worker import Worker
 
-from gbp_notifications import tasks
+from gbp_notifications import tasks, worker
 from gbp_notifications.exceptions import TemplateNotFoundError
 from gbp_notifications.settings import Settings
 from gbp_notifications.templates import load_template, render_template
@@ -32,7 +30,6 @@ class EmailMethod:  # pylint: disable=too-few-public-methods
     def send(self, event: Event, recipient: Recipient) -> None:
         """Notify the given Recipient of the given Event"""
         if msg := self.create_message(event, recipient):
-            worker = Worker(GBPSettings.from_environ())
             worker.run(tasks.sendmail, msg["From"], [msg["To"]], msg.as_string())
 
     def create_message(self, event: Event, recipient: Recipient) -> EmailMessage | None:

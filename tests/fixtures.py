@@ -6,7 +6,6 @@ from importlib import import_module
 from typing import Any
 from unittest import mock
 
-import gentoo_build_publisher.worker
 from gbp_testkit import fixtures as testkit
 from gentoo_build_publisher.types import Build, GBPMetadata, Package, PackageMetadata
 from unittest_fixtures import FixtureContext, Fixtures, fixture
@@ -18,11 +17,10 @@ tmpdir = testkit.tmpdir
 
 
 @fixture()
-def worker(
-    _fixtures: Fixtures, target=gentoo_build_publisher.worker
-) -> FixtureContext[mock.Mock]:
-    with mock.patch.object(target, "Worker") as mock_worker:
-        yield mock_worker
+def worker_run(_fixtures: Fixtures) -> FixtureContext[mock.Mock]:
+    """Mock gbp_notifications.worker.run"""
+    with mock.patch("gbp_notifications.worker.run") as mock_obj:
+        yield mock_obj
 
 
 @fixture()

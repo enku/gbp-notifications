@@ -5,7 +5,7 @@ from dataclasses import replace
 from pathlib import Path
 
 from gbp_testkit import fixtures as testkit
-from unittest_fixtures import Fixtures, given, where
+from unittest_fixtures import Fixtures, given
 
 from gbp_notifications import tasks
 from gbp_notifications.methods import email
@@ -16,8 +16,7 @@ from . import fixtures as tf
 from .lib import TestCase
 
 
-@given(tf.event, tf.worker, tf.logger)
-@where(worker__target=email)
+@given(tf.event, tf.worker_run, tf.logger)
 class SendTests(TestCase):
     """Tests for the EmailMethod.send method"""
 
@@ -33,13 +32,9 @@ class SendTests(TestCase):
         method.send(fixtures.event, self.recipient)
         msg = method.compose(fixtures.event, self.recipient).as_string()
 
-        fixtures.worker.return_value.run.assert_called_once()
-        args, kwargs = fixtures.worker.return_value.run.call_args
-        self.assertEqual(
-            args,
-            (tasks.sendmail, "gbp@host.invalid", ["marduk <marduk@host.invalid>"], msg),
+        fixtures.worker_run.assert_called_once_with(
+            tasks.sendmail, "gbp@host.invalid", ["marduk <marduk@host.invalid>"], msg
         )
-        self.assertEqual(kwargs, {})
 
     def test_with_missing_template(self, fixtures: Fixtures) -> None:
         event = replace(fixtures.event, name="bogus")
@@ -51,7 +46,7 @@ class SendTests(TestCase):
         method = email.EmailMethod(settings)
         method.send(event, self.recipient)
 
-        fixtures.worker.return_value.run.assert_not_called()
+        fixtures.worker_run.assert_not_called()
         fixtures.logger.warning.assert_called_once_with(
             "No template found for event: %s", "bogus"
         )

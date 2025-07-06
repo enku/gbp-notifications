@@ -23,22 +23,19 @@ ENVIRON = {
 }
 
 
-@given(testkit.environ, tf.worker, tf.event)
-@where(environ=ENVIRON, worker__target=webhook)
+@given(testkit.environ, tf.worker_run, tf.event)
+@where(environ=ENVIRON)
 class SendTests(TestCase):
     """Tests for the WebhookMethod.send method"""
 
     # pylint: disable=duplicate-code
 
     def test(self, fixtures: Fixtures) -> None:
-        worker = fixtures.worker
         send_event_to_recipients(fixtures.event)
 
-        worker.return_value.run.assert_called_once()
-        args, kwargs = worker.return_value.run.call_args
         body = webhook.create_body(fixtures.event, mock.Mock(spec=Recipient))
-        self.assertEqual(args, (tasks.send_http_request, "marduk", body))
-        self.assertEqual(kwargs, {})
+        worker_run = fixtures.worker_run
+        worker_run.assert_called_once_with(tasks.send_http_request, "marduk", body)
 
 
 @given(tf.event)

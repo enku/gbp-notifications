@@ -8,10 +8,7 @@ See https://pushover.net
 
 from typing import Any
 
-from gentoo_build_publisher.settings import Settings as GBPSettings
-from gentoo_build_publisher.worker import Worker
-
-from gbp_notifications import tasks
+from gbp_notifications import tasks, worker
 from gbp_notifications.settings import Settings
 from gbp_notifications.types import Event, Recipient
 
@@ -26,7 +23,6 @@ class PushoverMethod:  # pylint: disable=too-few-public-methods
 
     def send(self, event: Event, recipient: Recipient) -> Any:
         """Send the given Event to the given Recipient"""
-        worker = Worker(GBPSettings.from_environ())
         worker.run(
             tasks.send_pushover_notification,
             recipient.config["pushover"],
