@@ -12,8 +12,7 @@ from gbp_notifications import tasks
 from gbp_notifications.methods import pushover
 from gbp_notifications.settings import Settings
 
-from . import fixtures as tf
-from .lib import PUSHOVER_ENVIRON, PUSHOVER_PARAMS, TestCase
+from . import lib
 
 ENVIRON = {
     "GBP_NOTIFICATIONS_RECIPIENTS": "marduk"
@@ -22,7 +21,7 @@ ENVIRON = {
 }
 
 
-class SendmailTests(TestCase):
+class SendmailTests(lib.TestCase):
     @mock.patch("smtplib.SMTP_SSL")
     def test(self, mock_smtp) -> None:
         from_addr = "from@host.invalid"
@@ -38,9 +37,9 @@ class SendmailTests(TestCase):
         smtp.sendmail.assert_called_once_with(from_addr, [to_addr], msg)
 
 
-@given(testkit.environ, tf.imports)
+@given(testkit.environ, lib.imports)
 @where(environ=ENVIRON, imports=["requests"])
-class SendHTTPRequestTests(TestCase):
+class SendHTTPRequestTests(lib.TestCase):
     def test(self, fixtures: Fixtures) -> None:
         settings = Settings.from_environ()
         tasks.send_http_request("marduk", '{"this": "that"}')
@@ -54,19 +53,19 @@ class SendHTTPRequestTests(TestCase):
         )
 
 
-@given(testkit.environ, tf.imports)
-@where(environ=PUSHOVER_ENVIRON, imports=["requests"])
-class SendPushoverNotificationTests(TestCase):
+@given(testkit.environ, lib.imports)
+@where(environ=lib.PUSHOVER_ENVIRON, imports=["requests"])
+class SendPushoverNotificationTests(lib.TestCase):
     def test(self, fixtures: Fixtures) -> None:
         settings = Settings.from_environ()
 
         tasks.send_pushover_notification(
-            PUSHOVER_PARAMS["device"],
-            PUSHOVER_PARAMS["title"],
-            PUSHOVER_PARAMS["message"],
+            lib.PUSHOVER_PARAMS["device"],
+            lib.PUSHOVER_PARAMS["title"],
+            lib.PUSHOVER_PARAMS["message"],
         )
 
         requests = fixtures.imports["requests"]
         requests.post.assert_called_once_with(
-            pushover.URL, json=PUSHOVER_PARAMS, timeout=settings.REQUESTS_TIMEOUT
+            pushover.URL, json=lib.PUSHOVER_PARAMS, timeout=settings.REQUESTS_TIMEOUT
         )

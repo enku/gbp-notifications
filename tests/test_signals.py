@@ -11,8 +11,7 @@ from unittest_fixtures import Fixtures, given, where
 from gbp_notifications.signals import dispatcher
 from gbp_notifications.types import Event, Recipient
 
-from . import fixtures as tf
-from .lib import TestCase
+from . import lib
 
 COMMON_SETTINGS = {
     "BUILD_PUBLISHER_JENKINS_BASE_URL": "https://jenkins.invalid",
@@ -23,10 +22,10 @@ COMMON_SETTINGS = {
 environ = os.environ
 
 
-@given(tf.caches, testkit.environ)
+@given(lib.caches, testkit.environ)
 @where(environ=COMMON_SETTINGS, environ__clear=True)
 @mock.patch("gbp_notifications.methods.email.EmailMethod")
-class HandlerTests(TestCase):
+class HandlerTests(lib.TestCase):
     def test_wildcard_machine(self, mock_get_method, fixtures: Fixtures) -> None:
         environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "*.build_published=marduk"
         build = Build(machine="babette", build_id="934")

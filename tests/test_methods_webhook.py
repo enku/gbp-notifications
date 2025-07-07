@@ -13,8 +13,7 @@ from gbp_notifications.methods import webhook
 from gbp_notifications.signals import send_event_to_recipients
 from gbp_notifications.types import Recipient
 
-from . import fixtures as tf
-from .lib import TestCase
+from . import lib
 
 ENVIRON = {
     "GBP_NOTIFICATIONS_RECIPIENTS": "marduk"
@@ -23,9 +22,9 @@ ENVIRON = {
 }
 
 
-@given(testkit.environ, tf.worker_run, tf.event)
+@given(testkit.environ, lib.worker_run, lib.event)
 @where(environ=ENVIRON)
-class SendTests(TestCase):
+class SendTests(lib.TestCase):
     """Tests for the WebhookMethod.send method"""
 
     # pylint: disable=duplicate-code
@@ -38,8 +37,8 @@ class SendTests(TestCase):
         worker_run.assert_called_once_with(tasks.send_http_request, "marduk", body)
 
 
-@given(tf.event)
-class CreateBodyTests(TestCase):
+@given(lib.event)
+class CreateBodyTests(lib.TestCase):
     def test(self, fixtures: Fixtures) -> None:
         body = webhook.create_body(fixtures.event, mock.Mock())
 

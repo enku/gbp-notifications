@@ -7,12 +7,11 @@ from unittest_fixtures import Fixtures, given
 
 from gbp_notifications import tasks
 
-from . import fixtures as tf
-from .lib import TestCase
+from . import lib
 
 
-@given(tf.worker_run)
-class DomainTests(TestCase):
+@given(lib.worker_run)
+class DomainTests(lib.TestCase):
     """Tests for the general domain"""
 
     def test(self, fixtures: Fixtures) -> None:

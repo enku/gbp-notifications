@@ -12,12 +12,11 @@ from gbp_notifications.methods import email
 from gbp_notifications.settings import Settings
 from gbp_notifications.types import Recipient, Subscription
 
-from . import fixtures as tf
-from .lib import TestCase
+from . import lib
 
 
-@given(tf.event, tf.worker_run, tf.logger)
-class SendTests(TestCase):
+@given(lib.event, lib.worker_run, lib.logger)
+class SendTests(lib.TestCase):
     """Tests for the EmailMethod.send method"""
 
     recipient = Recipient(name="marduk", config={"email": "marduk@host.invalid"})
@@ -52,8 +51,8 @@ class SendTests(TestCase):
         )
 
 
-@given(tf.event, tf.package)
-class GenerateEmailContentTests(TestCase):
+@given(lib.event, lib.package)
+class GenerateEmailContentTests(lib.TestCase):
     def test(self, fixtures: Fixtures) -> None:
         recipient = Recipient(name="bob", config={"email": "bob@host.invalid"})
 
@@ -63,7 +62,7 @@ class GenerateEmailContentTests(TestCase):
 
 
 @given(testkit.tmpdir)
-class EmailPasswordTests(TestCase):
+class EmailPasswordTests(lib.TestCase):
     def test_email_password_string(self, fixtures: Fixtures) -> None:
         settings = Settings(EMAIL_SMTP_PASSWORD="foobar")
 
