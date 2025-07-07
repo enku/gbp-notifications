@@ -53,7 +53,6 @@ def parse_webhook_config(config: str) -> tuple[str, CaseInsensitiveDict[str]]:
         ("https://host.invalid/webook, {"X-Header-A": "foo", "X-Header-B": "bar"})
     """
     url, _, header_conf = config.partition("|")
-
     headers = parse_header_conf(header_conf)
 
     return url, headers

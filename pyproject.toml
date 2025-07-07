@@ -35,7 +35,7 @@ requires = ["pdm-backend"]
 build-backend = "pdm.backend"
 
 [tool.coverage.run]
-source = ["gbp_notifications"]
+source = ["gbp_notifications", "tests"]
 omit = ["src/gbp_notifications/migrations/*"]
 
 [tool.mypy]
