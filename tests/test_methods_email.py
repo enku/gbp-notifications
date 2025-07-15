@@ -29,10 +29,16 @@ class SendTests(lib.TestCase):
         )
         method = email.EmailMethod(settings)
         method.send(fixtures.event, self.recipient)
-        msg = method.compose(fixtures.event, self.recipient).as_string()
+        msg = method.compose(fixtures.event, self.recipient)
 
+        self.assertEqual("gbp@host.invalid", msg["from"])
+        self.assertEqual("marduk <marduk@host.invalid>", msg["to"])
+        self.assertEqual("Gentoo Build Publisher: build_pulled", msg["subject"])
         fixtures.worker_run.assert_called_once_with(
-            tasks.sendmail, "gbp@host.invalid", ["marduk <marduk@host.invalid>"], msg
+            tasks.sendmail,
+            "gbp@host.invalid",
+            ["marduk <marduk@host.invalid>"],
+            msg.as_string(),
         )
 
     def test_with_missing_template(self, fixtures: Fixtures) -> None:
