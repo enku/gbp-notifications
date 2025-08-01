@@ -2,9 +2,7 @@
 
 # pylint: disable=missing-docstring,unused-argument
 from dataclasses import replace
-from pathlib import Path
 
-from gbp_testkit import fixtures as testkit
 from unittest_fixtures import Fixtures, given
 
 from gbp_notifications import tasks
@@ -67,7 +65,7 @@ class GenerateEmailContentTests(lib.TestCase):
         self.assertIn(f"• {fixtures.package.cpv}", result)
 
 
-@given(testkit.tmpdir)
+@given(lib.pw_file)
 class EmailPasswordTests(lib.TestCase):
     def test_email_password_string(self, fixtures: Fixtures) -> None:
         settings = Settings(EMAIL_SMTP_PASSWORD="foobar")
@@ -75,19 +73,13 @@ class EmailPasswordTests(lib.TestCase):
         self.assertEqual(email.email_password(settings), "foobar")
 
     def test_email_password_from_file(self, fixtures: Fixtures) -> None:
-        pw_file = Path(fixtures.tmpdir, "password")
-        pw_file.write_text("foobar", encoding="UTF-8")
+        settings = Settings(EMAIL_SMTP_PASSWORD_FILE=str(fixtures.pw_file))
 
-        settings = Settings(EMAIL_SMTP_PASSWORD_FILE=str(pw_file))
-
-        self.assertEqual(email.email_password(settings), "foobar")
+        self.assertEqual(email.email_password(settings), "secret")
 
     def test_email_password_prefer_file(self, fixtures: Fixtures) -> None:
-        pw_file = Path(fixtures.tmpdir, "password")
-        pw_file.write_text("file", encoding="UTF-8")
-
         settings = Settings(
-            EMAIL_SMTP_PASSWORD="string", EMAIL_SMTP_PASSWORD_FILE=str(pw_file)
+            EMAIL_SMTP_PASSWORD="string", EMAIL_SMTP_PASSWORD_FILE=str(fixtures.pw_file)
         )
 
-        self.assertEqual(email.email_password(settings), "file")
+        self.assertEqual(email.email_password(settings), "secret")

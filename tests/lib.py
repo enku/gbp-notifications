@@ -1,5 +1,6 @@
 # pylint: disable=missing-docstring,redefined-outer-name
 from importlib import import_module
+from pathlib import Path
 from typing import Any
 from unittest import mock
 
@@ -120,3 +121,11 @@ def caches(_fixtures: Fixtures) -> FixtureContext[None]:
     get_method.cache_clear()
     yield
     get_method.cache_clear()
+
+
+@fixture(testkit.tmpdir)
+def pw_file(fixtures: Fixtures, filename: str = "password", pw: str = "secret") -> Path:
+    pw_file = Path(fixtures.tmpdir, filename)
+    pw_file.write_text(pw, encoding="UTF-8")
+
+    return pw_file
