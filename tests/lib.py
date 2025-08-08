@@ -142,3 +142,9 @@ def recipient(
         config["email"] = email
 
     return Recipient(name=name, config=config)
+
+
+@fixture()
+def build(_: Fixtures, machine: str = "babette", build_id: str = "934") -> Build:
+    """A GBP Build"""
+    return Build(machine=machine, build_id=build_id)

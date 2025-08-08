@@ -5,7 +5,7 @@ import os
 from unittest import mock
 
 from gbp_testkit import fixtures as testkit
-from gentoo_build_publisher.types import Build, GBPMetadata, Package, PackageMetadata
+from gentoo_build_publisher.types import GBPMetadata, Package, PackageMetadata
 from unittest_fixtures import Fixtures, given, where
 
 from gbp_notifications.signals import dispatcher
@@ -22,13 +22,13 @@ COMMON_SETTINGS = {
 environ = os.environ
 
 
-@given(lib.caches, testkit.environ, lib.recipient)
+@given(lib.caches, testkit.environ, lib.recipient, lib.build)
 @where(environ=COMMON_SETTINGS, environ__clear=True)
 @mock.patch("gbp_notifications.methods.email.EmailMethod")
 class HandlerTests(lib.TestCase):
     def test_wildcard_machine(self, mock_get_method, fixtures: Fixtures) -> None:
         environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "*.build_published=marduk"
-        build = Build(machine="babette", build_id="934")
+        build = fixtures.build
         event = Event(name="build_published", machine="babette")
         recipient = fixtures.recipient
 
@@ -40,7 +40,7 @@ class HandlerTests(lib.TestCase):
         self, mock_get_method: mock.Mock, fixtures: Fixtures
     ) -> None:
         environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "babette.*=marduk"
-        build = Build(machine="babette", build_id="934")
+        build = fixtures.build
         event = Event(name="build_published", machine="babette")
         recipient = fixtures.recipient
 
@@ -55,7 +55,7 @@ class HandlerTests(lib.TestCase):
         environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = (
             "babette.*=marduk *.build_published=marduk"
         )
-        build = Build(machine="babette", build_id="934")
+        build = fixtures.build
         event = Event(name="build_published", machine="babette")
         recipient = fixtures.recipient
 
@@ -68,7 +68,7 @@ class HandlerTests(lib.TestCase):
     ) -> None:
         # Double wildcard is sent exactly once
         environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "*.*=marduk"
-        build = Build(machine="babette", build_id="934")
+        build = fixtures.build
         event = Event(name="build_published", machine="babette")
         recipient = fixtures.recipient
 
@@ -81,7 +81,7 @@ class HandlerTests(lib.TestCase):
     ) -> None:
         """When subscription has a non-exisent recipient it doesn't error"""
         environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "*.*=bogus"
-        build = Build(machine="babette", build_id="934")
+        build = fixtures.build
 
         dispatcher.emit("published", build=build)
 
@@ -91,7 +91,7 @@ class HandlerTests(lib.TestCase):
     def test_sends_event_data(
         self, send_event_to_recipients, _mock_get_method, fixtures: Fixtures
     ) -> None:
-        build = Build(machine="babette", build_id="934")
+        build = fixtures.build
         package = Package(
             build_id=1,
             build_time=12345,

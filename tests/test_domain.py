@@ -2,7 +2,6 @@
 from unittest import mock
 
 from gentoo_build_publisher.signals import dispatcher
-from gentoo_build_publisher.types import Build
 from unittest_fixtures import Fixtures, given
 
 from gbp_notifications import tasks
@@ -10,12 +9,12 @@ from gbp_notifications import tasks
 from . import lib
 
 
-@given(lib.worker_run)
+@given(lib.worker_run, lib.build)
 class DomainTests(lib.TestCase):
     """Tests for the general domain"""
 
     def test(self, fixtures: Fixtures) -> None:
-        build = Build(machine="babette", build_id="666")
+        build = fixtures.build
 
         dispatcher.emit("postpull", build=build, packages=[], gbp_metadata=None)
 
