@@ -40,7 +40,7 @@ build-backend = "pdm.backend"
 
 [tool.coverage.run]
 source = ["gbp_notifications", "tests"]
-omit = ["src/gbp_notifications/migrations/*"]
+omit = ["src/gbp_notifications/migrations/*", "tests/__main__.py"]
 
 [tool.mypy]
 plugins =["mypy_django_plugin.main"]
