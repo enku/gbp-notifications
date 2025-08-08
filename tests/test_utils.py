@@ -4,7 +4,8 @@
 import collections
 import unittest
 
-from gbp_notifications.types import Recipient
+from unittest_fixtures import Fixtures, given, where
+
 from gbp_notifications.utils import (
     find_subscribers,
     parse_header_conf,
@@ -12,6 +13,8 @@ from gbp_notifications.utils import (
     sort_items_by,
     split_string_by,
 )
+
+from . import lib
 
 
 class SplitStringByTests(unittest.TestCase):
@@ -42,24 +45,20 @@ class SplitStringByTests(unittest.TestCase):
         self.assertEqual(("prefix", "|suffix"), split_string_by(s, "|"))
 
 
+@given(r1=lib.recipient, r2=lib.recipient, r3=lib.recipient)
+@where(r1__name="foo", r2__name="bar", r3__name="baz")
 class FindSubscribersTests(unittest.TestCase):
-    recipients = [
-        Recipient(name="foo", config={}),
-        Recipient(name="bar", config={}),
-        Recipient(name="baz", config={}),
-    ]
+    def test(self, fixtures: Fixtures) -> None:
+        recipients = [fixtures.r1, fixtures.r2, fixtures.r3]
+        subs = find_subscribers(recipients, ["bar", "baz"])
 
-    def test(self) -> None:
-        subs = find_subscribers(self.recipients, ["bar", "baz"])
+        self.assertEqual({fixtures.r2, fixtures.r3}, subs)
 
-        self.assertEqual(
-            {Recipient(name="bar", config={}), Recipient(name="baz", config={})}, subs
-        )
+    def test_bogus_name(self, fixtures: Fixtures) -> None:
+        recipients = [fixtures.r1, fixtures.r2, fixtures.r3]
+        subs = find_subscribers(recipients, ["bar", "bogus"])
 
-    def test_bogus_name(self) -> None:
-        subs = find_subscribers(self.recipients, ["bar", "bogus"])
-
-        self.assertEqual({Recipient(name="bar", config={})}, subs)
+        self.assertEqual({fixtures.r2}, subs)
 
 
 class SortItemsByTests(unittest.TestCase):

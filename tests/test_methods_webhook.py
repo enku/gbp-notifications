@@ -11,7 +11,6 @@ from unittest_fixtures import Fixtures, given, where
 from gbp_notifications import tasks
 from gbp_notifications.methods import webhook
 from gbp_notifications.signals import send_event_to_recipients
-from gbp_notifications.types import Recipient
 
 from . import lib
 
@@ -22,7 +21,7 @@ ENVIRON = {
 }
 
 
-@given(testkit.environ, lib.worker_run, lib.event)
+@given(testkit.environ, lib.worker_run, lib.event, lib.recipient)
 @where(environ=ENVIRON)
 class SendTests(lib.TestCase):
     """Tests for the WebhookMethod.send method"""
@@ -32,7 +31,7 @@ class SendTests(lib.TestCase):
     def test(self, fixtures: Fixtures) -> None:
         send_event_to_recipients(fixtures.event)
 
-        body = webhook.create_body(fixtures.event, mock.Mock(spec=Recipient))
+        body = webhook.create_body(fixtures.event, fixtures.recipient)
         worker_run = fixtures.worker_run
         worker_run.assert_called_once_with(tasks.send_http_request, "marduk", body)
 

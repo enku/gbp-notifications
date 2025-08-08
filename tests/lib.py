@@ -10,7 +10,7 @@ from gentoo_build_publisher.types import Build, GBPMetadata, Package, PackageMet
 from unittest_fixtures import FixtureContext, Fixtures, fixture, given, where
 
 from gbp_notifications.methods import email, get_method
-from gbp_notifications.types import Event
+from gbp_notifications.types import Event, Recipient
 
 PUSHOVER_PARAMS = {
     "device": "mydevice",
@@ -129,3 +129,16 @@ def pw_file(fixtures: Fixtures, filename: str = "password", pw: str = "secret") 
     pw_file.write_text(pw, encoding="UTF-8")
 
     return pw_file
+
+
+@fixture()
+def recipient(
+    _: Fixtures, name: str = "marduk", email: str | None = "marduk@host.invalid"
+) -> Recipient:
+    """Fixture for a Recipient"""
+    config: dict[str, Any] = {}
+
+    if email:
+        config["email"] = email
+
+    return Recipient(name=name, config=config)

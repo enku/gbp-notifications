@@ -9,7 +9,7 @@ from gentoo_build_publisher.types import Build, GBPMetadata, Package, PackageMet
 from unittest_fixtures import Fixtures, given, where
 
 from gbp_notifications.signals import dispatcher
-from gbp_notifications.types import Event, Recipient
+from gbp_notifications.types import Event
 
 from . import lib
 
@@ -22,7 +22,7 @@ COMMON_SETTINGS = {
 environ = os.environ
 
 
-@given(lib.caches, testkit.environ)
+@given(lib.caches, testkit.environ, lib.recipient)
 @where(environ=COMMON_SETTINGS, environ__clear=True)
 @mock.patch("gbp_notifications.methods.email.EmailMethod")
 class HandlerTests(lib.TestCase):
@@ -30,7 +30,7 @@ class HandlerTests(lib.TestCase):
         environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "*.build_published=marduk"
         build = Build(machine="babette", build_id="934")
         event = Event(name="build_published", machine="babette")
-        recipient = Recipient(name="marduk", config={"email": "marduk@host.invalid"})
+        recipient = fixtures.recipient
 
         dispatcher.emit("published", build=build)
 
@@ -42,7 +42,7 @@ class HandlerTests(lib.TestCase):
         environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "babette.*=marduk"
         build = Build(machine="babette", build_id="934")
         event = Event(name="build_published", machine="babette")
-        recipient = Recipient(name="marduk", config={"email": "marduk@host.invalid"})
+        recipient = fixtures.recipient
 
         dispatcher.emit("published", build=build)
 
@@ -57,7 +57,7 @@ class HandlerTests(lib.TestCase):
         )
         build = Build(machine="babette", build_id="934")
         event = Event(name="build_published", machine="babette")
-        recipient = Recipient(name="marduk", config={"email": "marduk@host.invalid"})
+        recipient = fixtures.recipient
 
         dispatcher.emit("published", build=build)
 
@@ -70,7 +70,7 @@ class HandlerTests(lib.TestCase):
         environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "*.*=marduk"
         build = Build(machine="babette", build_id="934")
         event = Event(name="build_published", machine="babette")
-        recipient = Recipient(name="marduk", config={"email": "marduk@host.invalid"})
+        recipient = fixtures.recipient
 
         dispatcher.emit("published", build=build)
 
