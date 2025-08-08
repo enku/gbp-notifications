@@ -14,7 +14,7 @@ from gbp_notifications.types import Event, Recipient
 
 PUSHOVER_PARAMS = {
     "device": "mydevice",
-    "message": "polaris: build pulled",
+    "message": "babette: build pulled",
     "title": "Gentoo Build Publisher",
     "token": "pushoverapptoken",
     "user": "pushoveruserkey",
@@ -96,17 +96,18 @@ def gbp_metadata(fixtures: Fixtures, build_duration: int = 3600) -> GBPMetadata:
     return GBPMetadata(build_duration=build_duration, packages=packages)
 
 
-@fixture(gbp_metadata)
-def event(
-    fixtures: Fixtures, name: str = "build_pulled", machine: str = "polaris"
-) -> Event:
+@fixture()
+def build(_: Fixtures, machine: str = "babette", build_id: str = "934") -> Build:
+    """A GBP Build"""
+    return Build(machine=machine, build_id=build_id)
+
+
+@fixture(gbp_metadata, build)
+def event(fixtures: Fixtures, name: str = "build_pulled") -> Event:
     return Event(
         name=name,
-        machine=machine,
-        data={
-            "build": Build(machine=machine, build_id="31536"),
-            "gbp_metadata": fixtures.gbp_metadata,
-        },
+        machine=fixtures.build.machine,
+        data={"build": fixtures.build, "gbp_metadata": fixtures.gbp_metadata},
     )
 
 
@@ -142,9 +143,3 @@ def recipient(
         config["email"] = email
 
     return Recipient(name=name, config=config)
-
-
-@fixture()
-def build(_: Fixtures, machine: str = "babette", build_id: str = "934") -> Build:
-    """A GBP Build"""
-    return Build(machine=machine, build_id=build_id)

@@ -43,9 +43,9 @@ class CreateBodyTests(lib.TestCase):
 
         expected = {
             "name": "build_pulled",
-            "machine": "polaris",
+            "machine": "babette",
             "data": {
-                "build": {"build_id": "31536", "machine": "polaris"},
+                "build": {"build_id": "934", "machine": "babette"},
                 "gbp_metadata": mock.ANY,
             },
         }
