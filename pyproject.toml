@@ -30,6 +30,10 @@ email = "gbp_notifications.methods.email:EmailMethod"
 pushover = "gbp_notifications.methods.pushover:PushoverMethod"
 webhook = "gbp_notifications.methods.webhook:WebhookMethod"
 
+[project.urls]
+homepage = "https://github.com/enku/gbp-notifications"
+repository = "https://github.com/enku/gbp-notifications"
+
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
