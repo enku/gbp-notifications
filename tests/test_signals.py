@@ -9,7 +9,6 @@ from gentoo_build_publisher.types import GBPMetadata, Package, PackageMetadata
 from unittest_fixtures import Fixtures, given, where
 
 from gbp_notifications.signals import dispatcher
-from gbp_notifications.types import Event
 
 from . import lib
 
@@ -22,14 +21,14 @@ COMMON_SETTINGS = {
 environ = os.environ
 
 
-@given(lib.caches, testkit.environ, lib.recipient, lib.build)
-@where(environ=COMMON_SETTINGS, environ__clear=True)
+@given(lib.caches, testkit.environ, lib.recipient, lib.build, lib.event)
+@where(environ=COMMON_SETTINGS, environ__clear=True, event__name="build_published")
 @mock.patch("gbp_notifications.methods.email.EmailMethod")
 class HandlerTests(lib.TestCase):
     def test_wildcard_machine(self, mock_get_method, fixtures: Fixtures) -> None:
         environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "*.build_published=marduk"
         build = fixtures.build
-        event = Event(name="build_published", machine="babette")
+        event = fixtures.event
         recipient = fixtures.recipient
 
         dispatcher.emit("published", build=build)
@@ -41,7 +40,7 @@ class HandlerTests(lib.TestCase):
     ) -> None:
         environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "babette.*=marduk"
         build = fixtures.build
-        event = Event(name="build_published", machine="babette")
+        event = fixtures.event
         recipient = fixtures.recipient
 
         dispatcher.emit("published", build=build)
@@ -56,7 +55,7 @@ class HandlerTests(lib.TestCase):
             "babette.*=marduk *.build_published=marduk"
         )
         build = fixtures.build
-        event = Event(name="build_published", machine="babette")
+        event = fixtures.event
         recipient = fixtures.recipient
 
         dispatcher.emit("published", build=build)
@@ -69,7 +68,7 @@ class HandlerTests(lib.TestCase):
         # Double wildcard is sent exactly once
         environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "*.*=marduk"
         build = fixtures.build
-        event = Event(name="build_published", machine="babette")
+        event = fixtures.event
         recipient = fixtures.recipient
 
         dispatcher.emit("published", build=build)
