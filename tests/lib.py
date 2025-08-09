@@ -12,16 +12,6 @@ from unittest_fixtures import FixtureContext, Fixtures, fixture, given, where
 from gbp_notifications.methods import email, get_method
 from gbp_notifications.types import Event, Recipient
 
-ENVIRON = {
-    "GBP_NOTIFICATIONS_RECIPIENTS": "albert:email=marduk@host.invalid",
-    "GBP_NOTIFICATIONS_SUBSCRIPTIONS": "babette.build_pulled=albert",
-    "GBP_NOTIFICATIONS_EMAIL_FROM": "marduk@host.invalid",
-    "GBP_NOTIFICATIONS_EMAIL_SMTP_HOST": "smtp.email.invalid",
-    "GBP_NOTIFICATIONS_EMAIL_SMTP_USERNAME": "marduk@host.invalid",
-    "GBP_NOTIFICATIONS_EMAIL_SMTP_PASSWORD": "supersecret",
-    "BUILD_PUBLISHER_WORKER_BACKEND": "sync",
-    "BUILD_PUBLISHER_JENKINS_BASE_URL": "http://jenkins.invalid/",
-}
 PUSHOVER_PARAMS = {
     "device": "mydevice",
     "message": "babette: build pulled",
@@ -29,6 +19,8 @@ PUSHOVER_PARAMS = {
     "token": "pushoverapptoken",
     "user": "pushoveruserkey",
 }
+
+
 PUSHOVER_ENVIRON = {
     "GBP_NOTIFICATIONS_RECIPIENTS": "marduk" ":pushover=mydevice",
     "GBP_NOTIFICATIONS_SUBSCRIPTIONS": "*.build_pulled=marduk",
@@ -38,7 +30,18 @@ PUSHOVER_ENVIRON = {
 
 
 @given(testkit.environ, testkit.tmpdir)
-@where(environ=ENVIRON)
+@where(
+    environ={
+        "GBP_NOTIFICATIONS_RECIPIENTS": "albert:email=marduk@host.invalid",
+        "GBP_NOTIFICATIONS_SUBSCRIPTIONS": "babette.build_pulled=albert",
+        "GBP_NOTIFICATIONS_EMAIL_FROM": "marduk@host.invalid",
+        "GBP_NOTIFICATIONS_EMAIL_SMTP_HOST": "smtp.email.invalid",
+        "GBP_NOTIFICATIONS_EMAIL_SMTP_USERNAME": "marduk@host.invalid",
+        "GBP_NOTIFICATIONS_EMAIL_SMTP_PASSWORD": "supersecret",
+        "BUILD_PUBLISHER_WORKER_BACKEND": "sync",
+        "BUILD_PUBLISHER_JENKINS_BASE_URL": "http://jenkins.invalid/",
+    }
+)
 class TestCase(DjangoTestCase):
     """Test case for gbp-notifications"""
 
