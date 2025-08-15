@@ -2,14 +2,15 @@
 from unittest import mock
 
 from gentoo_build_publisher.signals import dispatcher
-from unittest_fixtures import Fixtures, given
+from unittest_fixtures import Fixtures, given, where
 
 from gbp_notifications import tasks
 
 from . import lib
 
 
-@given(lib.worker_run, lib.build)
+@given(lib.build, worker_run=lib.patch)
+@where(worker_run__target="gentoo_build_publisher.worker.run")
 class DomainTests(lib.TestCase):
     """Tests for the general domain"""
 

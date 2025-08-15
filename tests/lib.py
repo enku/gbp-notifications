@@ -44,13 +44,6 @@ class TestCase(DjangoTestCase):
 
 
 @fixture()
-def worker_run(_fixtures: Fixtures) -> FixtureContext[mock.Mock]:
-    """Mock gbp_notifications.worker.run"""
-    with mock.patch("gentoo_build_publisher.worker.run") as mock_obj:
-        yield mock_obj
-
-
-@fixture()
 def imports(
     _fixtures: Fixtures, imports: list[str] | None = None
 ) -> FixtureContext[dict[str, mock.Mock]]:

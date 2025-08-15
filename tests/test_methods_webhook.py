@@ -21,8 +21,9 @@ ENVIRON = {
 }
 
 
-@given(testkit.environ, lib.worker_run, lib.event, lib.recipient)
+@given(testkit.environ, lib.event, lib.recipient, worker_run=lib.patch)
 @where(environ=ENVIRON)
+@where(worker_run__target="gentoo_build_publisher.worker.run")
 class SendTests(lib.TestCase):
     """Tests for the WebhookMethod.send method"""
 
