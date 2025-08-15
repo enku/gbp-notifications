@@ -9,7 +9,7 @@ from gbp_testkit import fixtures as testkit
 from gentoo_build_publisher.types import Build, GBPMetadata, Package, PackageMetadata
 from unittest_fixtures import FixtureContext, Fixtures, fixture, given, where
 
-from gbp_notifications.methods import email, get_method
+from gbp_notifications.methods import get_method
 from gbp_notifications.types import Event, Recipient
 
 ENVIRON = {
@@ -99,12 +99,6 @@ def event(fixtures: Fixtures, name: str = "build_pulled") -> Event:
         machine=fixtures.build.machine,
         data={"build": fixtures.build, "gbp_metadata": fixtures.gbp_metadata},
     )
-
-
-@fixture()
-def logger(_fixtures: Fixtures, target=email) -> FixtureContext[mock.Mock]:
-    with mock.patch.object(target, "logger") as mock_logger:
-        yield mock_logger
 
 
 @fixture()

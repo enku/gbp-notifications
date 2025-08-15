@@ -13,8 +13,9 @@ from gbp_notifications.types import Subscription
 from . import lib
 
 
-@given(lib.event, lib.logger, lib.recipient, worker_run=lib.patch)
+@given(lib.event, lib.recipient, worker_run=lib.patch, logger=lib.patch)
 @where(worker_run__target="gentoo_build_publisher.worker.run")
+@where(logger__target="gbp_notifications.methods.email.logger")
 class SendTests(lib.TestCase):
     """Tests for the EmailMethod.send method"""
 
