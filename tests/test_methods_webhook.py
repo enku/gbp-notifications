@@ -36,10 +36,10 @@ class SendTests(lib.TestCase):
         worker_run.assert_called_once_with(tasks.send_http_request, "marduk", body)
 
 
-@given(lib.event)
+@given(lib.event, recipient=lib.patch)
 class CreateBodyTests(lib.TestCase):
     def test(self, fixtures: Fixtures) -> None:
-        body = webhook.create_body(fixtures.event, mock.Mock())
+        body = webhook.create_body(fixtures.event, fixtures.recipient)
 
         expected = {
             "name": "build_pulled",

@@ -3,8 +3,6 @@
 # pylint: disable=missing-docstring
 
 
-from unittest import mock
-
 from gbp_testkit import fixtures as testkit
 from unittest_fixtures import Fixtures, given, where
 
@@ -21,18 +19,19 @@ ENVIRON = {
 }
 
 
+@given(SMTP=lib.patch)
+@where(SMTP__target="smtplib.SMTP_SSL")
 class SendmailTests(lib.TestCase):
-    @mock.patch("smtplib.SMTP_SSL")
-    def test(self, mock_smtp) -> None:
+    def test(self, fixtures: Fixtures) -> None:
         from_addr = "from@host.invalid"
         to_addr = "to@host.invalid"
         msg = "This is a test"
 
         tasks.sendmail(from_addr, [to_addr], msg)
 
-        mock_smtp.assert_called_once_with("smtp.email.invalid", port=465)
+        fixtures.SMTP.assert_called_once_with("smtp.email.invalid", port=465)
 
-        smtp = mock_smtp.return_value.__enter__.return_value
+        smtp = fixtures.SMTP.return_value.__enter__.return_value
         smtp.login.assert_called_once_with("marduk@host.invalid", "supersecret")
         smtp.sendmail.assert_called_once_with(from_addr, [to_addr], msg)
 

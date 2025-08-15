@@ -22,10 +22,11 @@ environ = os.environ
 
 
 @given(lib.caches, testkit.environ, lib.recipient, lib.build, lib.event)
+@given(method=lib.patch)
 @where(environ=COMMON_SETTINGS, environ__clear=True, event__name="build_published")
-@mock.patch("gbp_notifications.methods.email.EmailMethod")
+@where(method__target="gbp_notifications.methods.email.EmailMethod")
 class HandlerTests(lib.TestCase):
-    def test_wildcard_machine(self, mock_get_method, fixtures: Fixtures) -> None:
+    def test_wildcard_machine(self, fixtures: Fixtures) -> None:
         environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "*.build_published=marduk"
         build = fixtures.build
         event = fixtures.event
@@ -33,11 +34,9 @@ class HandlerTests(lib.TestCase):
 
         dispatcher.emit("published", build=build)
 
-        mock_get_method.return_value.send.assert_called_once_with(event, recipient)
+        fixtures.method.return_value.send.assert_called_once_with(event, recipient)
 
-    def test_wildcard_name(
-        self, mock_get_method: mock.Mock, fixtures: Fixtures
-    ) -> None:
+    def test_wildcard_name(self, fixtures: Fixtures) -> None:
         environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "babette.*=marduk"
         build = fixtures.build
         event = fixtures.event
@@ -45,11 +44,9 @@ class HandlerTests(lib.TestCase):
 
         dispatcher.emit("published", build=build)
 
-        mock_get_method.return_value.send.assert_called_once_with(event, recipient)
+        fixtures.method.return_value.send.assert_called_once_with(event, recipient)
 
-    def test_wildcard_machine_and_name(
-        self, mock_get_method: mock.Mock, fixtures: Fixtures
-    ) -> None:
+    def test_wildcard_machine_and_name(self, fixtures: Fixtures) -> None:
         # Multiple matches should only send one message per recipient
         environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = (
             "babette.*=marduk *.build_published=marduk"
@@ -60,11 +57,9 @@ class HandlerTests(lib.TestCase):
 
         dispatcher.emit("published", build=build)
 
-        mock_get_method.return_value.send.assert_called_once_with(event, recipient)
+        fixtures.method.return_value.send.assert_called_once_with(event, recipient)
 
-    def test_wildcard_double(
-        self, mock_get_method: mock.Mock, fixtures: Fixtures
-    ) -> None:
+    def test_wildcard_double(self, fixtures: Fixtures) -> None:
         # Double wildcard is sent exactly once
         environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "*.*=marduk"
         build = fixtures.build
@@ -73,22 +68,20 @@ class HandlerTests(lib.TestCase):
 
         dispatcher.emit("published", build=build)
 
-        mock_get_method.return_value.send.assert_called_once_with(event, recipient)
+        fixtures.method.return_value.send.assert_called_once_with(event, recipient)
 
-    def test_sub_when_recipient_does_not_exist(
-        self, mock_get_method, fixtures: Fixtures
-    ) -> None:
+    def test_sub_when_recipient_does_not_exist(self, fixtures: Fixtures) -> None:
         """When subscription has a non-exisent recipient it doesn't error"""
         environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "*.*=bogus"
         build = fixtures.build
 
         dispatcher.emit("published", build=build)
 
-        mock_get_method.return_value.send.assert_not_called()
+        fixtures.method.return_value.send.assert_not_called()
 
     @mock.patch("gbp_notifications.signals.send_event_to_recipients")
     def test_sends_event_data(
-        self, send_event_to_recipients, _mock_get_method, fixtures: Fixtures
+        self, send_event_to_recipients, fixtures: Fixtures
     ) -> None:
         build = fixtures.build
         package = Package(
