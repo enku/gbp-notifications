@@ -127,25 +127,3 @@ def recipient(
         config["email"] = email
 
     return Recipient(name=name, config=config)
-
-
-@fixture()
-def patch(
-    _: Fixtures, target: str = "", attrs: dict[str, Any] | None = None, **kwargs: Any
-) -> FixtureContext[mock.Mock]:
-    attrs = attrs or {}
-
-    if target:
-        patch = mock.patch(target, **kwargs)
-        fake = patch.start()
-    else:
-        patch = None
-        fake = mock.Mock(**kwargs)
-
-    for name, value in attrs.items():
-        setattr(fake, name, value)
-
-    yield fake
-
-    if patch:
-        patch.stop()
