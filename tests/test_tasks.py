@@ -19,7 +19,7 @@ ENVIRON = {
 }
 
 
-@given(SMTP=lib.patch)
+@given(SMTP=testkit.patch)
 @where(SMTP__target="smtplib.SMTP_SSL")
 class SendmailTests(lib.TestCase):
     def test(self, fixtures: Fixtures) -> None:

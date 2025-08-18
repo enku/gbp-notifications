@@ -3,6 +3,7 @@
 # pylint: disable=missing-docstring,unused-argument
 from dataclasses import replace
 
+import gbp_testkit.fixtures as testkit
 from unittest_fixtures import Fixtures, given, where
 
 from gbp_notifications import tasks
@@ -13,7 +14,7 @@ from gbp_notifications.types import Subscription
 from . import lib
 
 
-@given(lib.event, lib.recipient, worker_run=lib.patch, logger=lib.patch)
+@given(lib.event, lib.recipient, worker_run=testkit.patch, logger=testkit.patch)
 @where(worker_run__target="gentoo_build_publisher.worker.run")
 @where(logger__target="gbp_notifications.methods.email.logger")
 class SendTests(lib.TestCase):

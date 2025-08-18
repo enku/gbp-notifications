@@ -1,6 +1,7 @@
 # pylint: disable=missing-docstring
 from unittest import mock
 
+import gbp_testkit.fixtures as testkit
 from gentoo_build_publisher.signals import dispatcher
 from unittest_fixtures import Fixtures, given, where
 
@@ -9,7 +10,7 @@ from gbp_notifications import tasks
 from . import lib
 
 
-@given(lib.build, worker_run=lib.patch)
+@given(lib.build, worker_run=testkit.patch)
 @where(worker_run__target="gentoo_build_publisher.worker.run")
 class DomainTests(lib.TestCase):
     """Tests for the general domain"""

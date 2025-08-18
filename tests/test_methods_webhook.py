@@ -21,7 +21,7 @@ ENVIRON = {
 }
 
 
-@given(testkit.environ, lib.event, lib.recipient, worker_run=lib.patch)
+@given(testkit.environ, lib.event, lib.recipient, worker_run=testkit.patch)
 @where(environ=ENVIRON)
 @where(worker_run__target="gentoo_build_publisher.worker.run")
 class SendTests(lib.TestCase):
@@ -37,7 +37,7 @@ class SendTests(lib.TestCase):
         worker_run.assert_called_once_with(tasks.send_http_request, "marduk", body)
 
 
-@given(lib.event, recipient=lib.patch)
+@given(lib.event, recipient=testkit.patch)
 class CreateBodyTests(lib.TestCase):
     def test(self, fixtures: Fixtures) -> None:
         body = webhook.create_body(fixtures.event, fixtures.recipient)
