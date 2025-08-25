@@ -1,6 +1,7 @@
 """Tests for the templates subpackage"""
 
 # pylint: disable=missing-docstring,unused-argument
+import gbp_testkit.fixtures as testkit
 from jinja2 import Template
 from unittest_fixtures import Fixtures, given
 
@@ -10,7 +11,7 @@ from gbp_notifications.templates import load_template, render_template
 from . import lib
 
 
-@given(lib.build)
+@given(testkit.build)
 class LoadTemplateTests(lib.TestCase):
     def test_loads_template(self, fixtures: Fixtures) -> None:
         template = load_template("email_build_pulled.eml")
@@ -23,7 +24,7 @@ class LoadTemplateTests(lib.TestCase):
             load_template("bogus")
 
 
-@given(lib.build)
+@given(testkit.build)
 class RenderTemplateTests(lib.TestCase):
     def test_build_pulled_template(self, fixtures: Fixtures) -> None:
         template = load_template("email_build_pulled.eml")

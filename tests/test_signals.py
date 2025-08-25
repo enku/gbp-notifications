@@ -21,7 +21,7 @@ COMMON_SETTINGS = {
 environ = os.environ
 
 
-@given(lib.caches, testkit.environ, lib.recipient, lib.build, lib.event)
+@given(lib.caches, testkit.environ, lib.recipient, testkit.build, lib.event)
 @given(method=testkit.patch)
 @where(environ=COMMON_SETTINGS, environ__clear=True, event__name="build_published")
 @where(method__target="gbp_notifications.methods.email.EmailMethod")

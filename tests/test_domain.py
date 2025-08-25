@@ -10,7 +10,7 @@ from gbp_notifications import tasks
 from . import lib
 
 
-@given(lib.build, worker_run=testkit.patch)
+@given(testkit.build, worker_run=testkit.patch)
 @where(worker_run__target="gentoo_build_publisher.worker.run")
 class DomainTests(lib.TestCase):
     """Tests for the general domain"""

@@ -40,13 +40,15 @@ class SendTests(lib.TestCase):
 @given(lib.event, recipient=testkit.patch)
 class CreateBodyTests(lib.TestCase):
     def test(self, fixtures: Fixtures) -> None:
+        build = fixtures.build
+
         body = webhook.create_body(fixtures.event, fixtures.recipient)
 
         expected = {
             "name": "build_pulled",
-            "machine": "babette",
+            "machine": build.machine,
             "data": {
-                "build": {"build_id": "934", "machine": "babette"},
+                "build": {"build_id": build.build_id, "machine": build.machine},
                 "gbp_metadata": mock.ANY,
             },
         }

@@ -6,7 +6,7 @@ from unittest import mock
 
 from django.test import TestCase as DjangoTestCase
 from gbp_testkit import fixtures as testkit
-from gentoo_build_publisher.types import Build, GBPMetadata, Package, PackageMetadata
+from gentoo_build_publisher.types import GBPMetadata, Package, PackageMetadata
 from unittest_fixtures import FixtureContext, Fixtures, fixture, given, where
 
 from gbp_notifications.methods import get_method
@@ -86,13 +86,7 @@ def gbp_metadata(fixtures: Fixtures, build_duration: int = 3600) -> GBPMetadata:
     return GBPMetadata(build_duration=build_duration, packages=packages)
 
 
-@fixture()
-def build(_: Fixtures, machine: str = "babette", build_id: str = "934") -> Build:
-    """A GBP Build"""
-    return Build(machine=machine, build_id=build_id)
-
-
-@fixture(gbp_metadata, build)
+@fixture(gbp_metadata, testkit.build)
 def event(fixtures: Fixtures, name: str = "build_pulled") -> Event:
     return Event(
         name=name,
