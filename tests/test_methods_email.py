@@ -14,6 +14,14 @@ from gbp_notifications.types import Subscription
 from . import lib
 
 
+@given(method=lambda f: email.EmailMethod(f.settings))
+@given(
+    settings=lambda f: Settings(
+        RECIPIENTS=(f.recipient,),
+        SUBSCRIPTIONS={f.event: Subscription([f.recipient])},
+        EMAIL_FROM="gbp@host.invalid",
+    )
+)
 @given(lib.event, lib.recipient, worker_run=testkit.patch, logger=testkit.patch)
 @where(worker_run__target="gentoo_build_publisher.worker.run")
 @where(logger__target="gbp_notifications.methods.email.logger")
@@ -21,14 +29,8 @@ class SendTests(lib.TestCase):
     """Tests for the EmailMethod.send method"""
 
     def test(self, fixtures: Fixtures) -> None:
-        settings = Settings(
-            RECIPIENTS=(fixtures.recipient,),
-            SUBSCRIPTIONS={fixtures.event: Subscription([fixtures.recipient])},
-            EMAIL_FROM="gbp@host.invalid",
-        )
-        method = email.EmailMethod(settings)
-        method.send(fixtures.event, fixtures.recipient)
-        msg = method.compose(fixtures.event, fixtures.recipient)
+        fixtures.method.send(fixtures.event, fixtures.recipient)
+        msg = fixtures.method.compose(fixtures.event, fixtures.recipient)
 
         self.assertEqual("gbp@host.invalid", msg["from"])
         self.assertEqual("marduk <marduk@host.invalid>", msg["to"])
@@ -42,13 +44,7 @@ class SendTests(lib.TestCase):
 
     def test_with_missing_template(self, fixtures: Fixtures) -> None:
         event = replace(fixtures.event, name="bogus")
-        settings = Settings(
-            RECIPIENTS=(fixtures.recipient,),
-            SUBSCRIPTIONS={fixtures.event: Subscription([fixtures.recipient])},
-            EMAIL_FROM="gbp@host.invalid",
-        )
-        method = email.EmailMethod(settings)
-        method.send(event, fixtures.recipient)
+        fixtures.method.send(event, fixtures.recipient)
 
         fixtures.worker_run.assert_not_called()
         fixtures.logger.warning.assert_called_once_with(
