@@ -14,10 +14,10 @@ from . import lib
 @given(testkit.build)
 class LoadTemplateTests(lib.TestCase):
     def test_loads_template(self, fixtures: Fixtures) -> None:
-        template = load_template("email_build_pulled.eml")
+        template = load_template("email_postpull.eml")
 
         self.assertIsInstance(template, Template)
-        self.assertEqual(template.name, "email_build_pulled.eml")
+        self.assertEqual(template.name, "email_postpull.eml")
 
     def test_template_not_found(self, fixtures: Fixtures) -> None:
         with self.assertRaises(TemplateNotFoundError):
@@ -26,15 +26,15 @@ class LoadTemplateTests(lib.TestCase):
 
 @given(testkit.build)
 class RenderTemplateTests(lib.TestCase):
-    def test_build_pulled_template(self, fixtures: Fixtures) -> None:
-        template = load_template("email_build_pulled.eml")
+    def test_postpull_template(self, fixtures: Fixtures) -> None:
+        template = load_template("email_postpull.eml")
         event = {"build": fixtures.build}
         context = {"event": event}
 
         render_template(template, context)
 
-    def test_build_published_template(self, fixtures: Fixtures) -> None:
-        template = load_template("email_build_published.eml")
+    def test_published_template(self, fixtures: Fixtures) -> None:
+        template = load_template("email_published.eml")
         event = {"build": fixtures.build}
         context = {"event": event}
 

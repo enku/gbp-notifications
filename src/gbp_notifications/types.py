@@ -33,7 +33,7 @@ class Event:
     def from_string(cls, s: str) -> Self:
         """Create an Event from the given string
 
-        String should look like "babette.build_pulled"
+        String should look like "babette.postpull"
         """
         machine, name = utils.split_string_by(s, ".")
 
@@ -117,7 +117,7 @@ class Subscription(tuple[Recipient, ...]):
     ) -> dict[Event, Self]:
         """Given the env-variable-like string, return a tuple of subscriptions"""
         # The string looks like this
-        # "babette.build_pulled=albert lighthous.build_pulled=user2"
+        # "babette.postpull=albert lighthouse.postpull=user2"
         subscriptions: dict[Event, Self] = {}
 
         for item in string.split():

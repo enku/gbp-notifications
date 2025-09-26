@@ -13,8 +13,9 @@ from gbp_notifications.methods import get_method
 from gbp_notifications.types import Event, Recipient
 
 ENVIRON = {
+    "GBP_NOTIFICATIONS_EVENTS": "postpull published",
     "GBP_NOTIFICATIONS_RECIPIENTS": "albert:email=marduk@host.invalid",
-    "GBP_NOTIFICATIONS_SUBSCRIPTIONS": "babette.build_pulled=albert",
+    "GBP_NOTIFICATIONS_SUBSCRIPTIONS": "babette.postpull=albert",
     "GBP_NOTIFICATIONS_EMAIL_FROM": "marduk@host.invalid",
     "GBP_NOTIFICATIONS_EMAIL_SMTP_HOST": "smtp.email.invalid",
     "GBP_NOTIFICATIONS_EMAIL_SMTP_USERNAME": "marduk@host.invalid",
@@ -24,14 +25,14 @@ ENVIRON = {
 }
 PUSHOVER_PARAMS = {
     "device": "mydevice",
-    "message": "babette: build pulled",
+    "message": "babette: postpull",
     "title": "Gentoo Build Publisher",
     "token": "pushoverapptoken",
     "user": "pushoveruserkey",
 }
 PUSHOVER_ENVIRON = {
     "GBP_NOTIFICATIONS_RECIPIENTS": "marduk" ":pushover=mydevice",
-    "GBP_NOTIFICATIONS_SUBSCRIPTIONS": "*.build_pulled=marduk",
+    "GBP_NOTIFICATIONS_SUBSCRIPTIONS": "*.postpull=marduk",
     "GBP_NOTIFICATIONS_PUSHOVER_APP_TOKEN": "pushoverapptoken",
     "GBP_NOTIFICATIONS_PUSHOVER_USER_KEY": "pushoveruserkey",
 }
@@ -87,7 +88,7 @@ def gbp_metadata(fixtures: Fixtures, build_duration: int = 3600) -> GBPMetadata:
 
 
 @fixture(gbp_metadata, testkit.build)
-def event(fixtures: Fixtures, name: str = "build_pulled") -> Event:
+def event(fixtures: Fixtures, name: str = "postpull") -> Event:
     return Event(
         name=name,
         machine=fixtures.build.machine,

@@ -23,11 +23,11 @@ environ = os.environ
 
 @given(lib.caches, testkit.environ, lib.recipient, testkit.build, lib.event)
 @given(method=testkit.patch)
-@where(environ=COMMON_SETTINGS, environ__clear=True, event__name="build_published")
+@where(environ=COMMON_SETTINGS, environ__clear=True, event__name="published")
 @where(method__target="gbp_notifications.methods.email.EmailMethod")
 class HandlerTests(lib.TestCase):
     def test_wildcard_machine(self, fixtures: Fixtures) -> None:
-        environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "*.build_published=marduk"
+        environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "*.published=marduk"
         build = fixtures.build
         event = fixtures.event
         recipient = fixtures.recipient
@@ -49,7 +49,7 @@ class HandlerTests(lib.TestCase):
     def test_wildcard_machine_and_name(self, fixtures: Fixtures) -> None:
         # Multiple matches should only send one message per recipient
         environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = (
-            "babette.*=marduk *.build_published=marduk"
+            "babette.*=marduk *.published=marduk"
         )
         build = fixtures.build
         event = fixtures.event
@@ -99,6 +99,6 @@ class HandlerTests(lib.TestCase):
         )
         data = {"build": build, "packages": [package], "gbp_metadata": gbp_metadata}
         event = send_event_to_recipients.call_args[0][0]
-        self.assertEqual(event.name, "build_pulled")
+        self.assertEqual(event.name, "postpull")
         self.assertEqual(event.machine, "babette")
         self.assertEqual(event.data, data)

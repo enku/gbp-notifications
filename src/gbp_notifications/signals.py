@@ -17,27 +17,24 @@ class SignalHandler(t.Protocol):  # pylint: disable=too-few-public-methods
         """We handle signals"""
 
 
-class _SignalHandlers:  # pylint: disable=too-few-public-methods
+class SignalHandlers:  # pylint: disable=too-few-public-methods
     """Container for signal handlers.
 
     This class is mainly to encapsolate the signal handlers that need a reference
     else they get garbage collected away
     """
 
-    @staticmethod
-    def get_handler(event_name: str) -> SignalHandler:
-        """Signal handler factory"""
+    def __init__(self, settings: Settings | None = None) -> None:
+        settings = settings or Settings.from_environ()
 
-        def handler(*, build: Build, **kwargs: t.Any) -> None:
-            send_event_to_recipients(Event.from_build(event_name, build, **kwargs))
+        self.bind(*settings.EVENTS)
 
-        handler.__doc__ = f"SignalHandler for {event_name!r}"
-        return handler
-
-    build_pulled_handler = get_handler("build_pulled")
-    dispatcher.bind(postpull=build_pulled_handler)
-    build_published_handler = get_handler("build_published")
-    dispatcher.bind(published=build_published_handler)
+    def bind(self, *signals: str) -> None:
+        """Create signal handlers and bind them to the given signals"""
+        for signal in signals:
+            handler = get_handler(signal)
+            dispatcher.bind(**{signal: handler})
+            setattr(self, signal, handler)
 
 
 def send_event_to_recipients(event: Event) -> None:
@@ -64,3 +61,16 @@ def wildcard_events(event: Event) -> list[Event]:
         Event(name="*", machine=event.machine),
         Event(name=event.name, machine="*"),
     ]
+
+
+def get_handler(event_name: str) -> SignalHandler:
+    """Signal handler factory"""
+
+    def handler(*, build: Build, **kwargs: t.Any) -> None:
+        send_event_to_recipients(Event.from_build(event_name, build, **kwargs))
+
+    handler.__doc__ = f"SignalHandler for {event_name!r}"
+    return handler
+
+
+signal_handlers = SignalHandlers()

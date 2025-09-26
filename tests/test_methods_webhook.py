@@ -17,7 +17,7 @@ from . import lib
 ENVIRON = {
     "GBP_NOTIFICATIONS_RECIPIENTS": "marduk"
     ":webhook=http://host.invalid/webhook|X-Pre-Shared-Key=1234",
-    "GBP_NOTIFICATIONS_SUBSCRIPTIONS": "*.build_pulled=marduk",
+    "GBP_NOTIFICATIONS_SUBSCRIPTIONS": "*.postpull=marduk",
 }
 
 
@@ -45,7 +45,7 @@ class CreateBodyTests(lib.TestCase):
         body = webhook.create_body(fixtures.event, fixtures.recipient)
 
         expected = {
-            "name": "build_pulled",
+            "name": "postpull",
             "machine": build.machine,
             "data": {
                 "build": {"build_id": build.build_id, "machine": build.machine},

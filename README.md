@@ -53,7 +53,7 @@ a build for the machine "babette" gets pulled:
 # /etc/gentoo-build-publisher.conf
 
 GBP_NOTIFICATIONS_RECIPIENTS="albert:email=marduk@host.invalid"
-GBP_NOTIFICATIONS_SUBSCRIPTIONS="babette.build_pulled=albert"
+GBP_NOTIFICATIONS_SUBSCRIPTIONS="babette.postpull=albert"
 
 GBP_NOTIFICATIONS_EMAIL_FROM="marduk@host.invalid"
 GBP_NOTIFICATIONS_EMAIL_SMTP_HOST="smtp.email.invalid"
@@ -64,16 +64,16 @@ GBP_NOTIFICATIONS_EMAIL_SMTP_PASSWORD="supersecret"
 The first two lines are setting up recipients and subscriptions. There is a
 single recipient named `albert` that has an email address. The second line
 sets up subscriptions. There is one subscription: when the machine "babette"
-receives a `build_pulled` event the the recipient with the name `"albert"`
-will be notified. Since `"albert"` has one notification method defined (email)
-that recipient will be notified via email.
+receives a `postpull` event the the recipient with the name `"albert"` will be
+notified. Since `"albert"` has one notification method defined (email) that
+recipient will be notified via email.
 
 The wildcard is supported for machines and events, on subscriptions. So
-`*.build_pulled=albert` means "send a notification to `albert` when any machine receives
-a `build_pulled` event" and `babette.*=albert` means "send a notification to `albert`
-when any event is receive for the machine `babette`.  The double-wildcard, `*.*=albert`
-does what you'd think.  Notifications are only sent once per recipient (per notification
-method).
+`*.postpull=albert` means "send a notification to `albert` when any machine
+receives a `postpull` event" and `babette.*=albert` means "send a notification
+to `albert` when any event is receive for the machine `babette`.  The
+double-wildcard, `*.*=albert` does what you'd think.  Notifications are only
+sent once per recipient (per notification method).
 
 The last lines are settings for the email notification method.
 gbp-notifications has support for multiple notification methods but currently
@@ -96,7 +96,7 @@ Then in your config file, the above configuration would look like this:
 albert = {email = "marduk@host.invalid"}
 
 [subscriptions]
-babette = {build_pulled = ["albert"]}
+babette = {postpull = ["albert"]}
 ```
 
 A more sophisticated example might be:
@@ -109,11 +109,11 @@ bob = {email = "bob@host.invalid"}
 
 [subscriptions]
 # Both Albert and Bob want to be notified when builds for babette are pulled
-babette = {build_pulled = ["albert", "bob"]}
+babette = {postpull = ["albert", "bob"]}
 
-# For lighthouse Albert only wants to be notified when builds are pulled. Bob only wants
-# To be notified when builds are published.
-lighthouse = {build_pulled = ["albert"], build_published = ["bob"]}
+# For lighthouse Albert only wants to be notified when builds are pulled. Bob
+# only wants to be notified when builds are published.
+lighthouse = {postpull = ["albert"], published = ["bob"]}
 ```
 
 ## Webhook method
@@ -123,15 +123,15 @@ consider the environment variables:
 
 ```
 GBP_NOTIFICATIONS_RECIPIENTS="marduk:webhook=http://host.invalid/webhook|X-Pre-Shared-Key=1234",
-GBP_NOTIFICATIONS_SUBSCRIPTIONS="*.build_pulled=marduk"
+GBP_NOTIFICATIONS_SUBSCRIPTIONS="*.postpull=marduk"
 ```
 
-The subscriber "marduk" is subscribed the `build_pulled` event for all
-machines. The recipient for marduk has a "webhook". The configuration for the
-web hook has values that are delimited with `"|"`. The first item will be the
-URL of the webhook and any remainint items will be HTTP headers used when
-requesting the URL. Note that header definitions are to be given in form
-`name=value` and not `name: value`.
+The subscriber "marduk" is subscribed the `postpull` event for all machines.
+The recipient for marduk has a "webhook". The configuration for the web hook
+has values that are delimited with `"|"`. The first item will be the URL of
+the webhook and any remainint items will be HTTP headers used when requesting
+the URL. Note that header definitions are to be given in form `name=value` and
+not `name: value`.
 
 Webhooks might be used, for example, to automatically update machines whenever
 a new build is published. Or perhaps a desktop notification:
@@ -142,10 +142,10 @@ a new build is published. Or perhaps a desktop notification:
 ## Pushover method
 
 [Pushover](https://pushover.net/) is a service that allows apps to send push
-notifications to mobile and other devices. gbp-notifications supports the Pushover
-service.  To enable gbp-notifications to sent Pushover notifications you'll need to
-create a user account as well as app key for your GBP instance. Then define the
-following denvironment variables:
+notifications to mobile and other devices. gbp-notifications supports the
+Pushover service.  To enable gbp-notifications to sent Pushover notifications
+you'll need to create a user account as well as app key for your GBP instance.
+Then define the following denvironment variables:
 
 ```sh
 # /etc/gentoo-build-publisher.conf
@@ -159,7 +159,7 @@ Pushover subscriptions will look like this:
 
 ```sh
 GBP_NOTIFICATIONS_RECIPIENTS="marduk:pushover=iphone16pro",
-GBP_NOTIFICATIONS_SUBSCRIPTIONS="*.build_pulled=marduk"
+GBP_NOTIFICATIONS_SUBSCRIPTIONS="*.postpull=marduk"
 ```
 
 Replacing `"iphone16pro"` with the device name you've registered with Pushover.

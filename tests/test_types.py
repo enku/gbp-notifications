@@ -17,11 +17,11 @@ class SubscriptionTests(TestCase):
     def test_from_string(self, fixtures: Fixtures) -> None:
         r1 = fixtures.r1
         r2 = fixtures.r2
-        s = "babette.build_pulled=foo lighthouse.died=bar"
+        s = "babette.postpull=foo lighthouse.died=bar"
 
         result = Subscription.from_string(s, [r1, r2])
 
-        ev1 = Event(name="build_pulled", machine="babette")
+        ev1 = Event(name="postpull", machine="babette")
         ev2 = Event(name="died", machine="lighthouse")
         expected = {ev1: Subscription([r1]), ev2: Subscription([r2])}
         self.assertEqual(result, expected)

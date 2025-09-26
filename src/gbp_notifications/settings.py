@@ -17,6 +17,9 @@ class Settings(BaseSettings):
     # pylint: disable=invalid-name,too-many-instance-attributes
     env_prefix: t.ClassVar = "GBP_NOTIFICATIONS_"
 
+    # Events we listen for
+    EVENTS: list[str] = dc.field(default_factory=lambda: ["postpull", "published"])
+
     RECIPIENTS: tuple[Recipient, ...] = dc.field(default_factory=tuple)
     SUBSCRIPTIONS: dict[Event, Subscription] = dc.field(default_factory=dict)
 
@@ -62,3 +65,8 @@ class Settings(BaseSettings):
         if data != data_dict:
             return cls.from_dict(prefix, data)
         return super().from_dict(prefix, data)
+
+    @staticmethod
+    def validate_events(value):
+        """Validator for EVENTS"""
+        return value.split()

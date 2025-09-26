@@ -15,7 +15,7 @@ from . import lib
 ENVIRON = {
     "GBP_NOTIFICATIONS_RECIPIENTS": "marduk"
     ":webhook=http://host.invalid/webhook|X-Pre-Shared-Key=1234",
-    "GBP_NOTIFICATIONS_SUBSCRIPTIONS": "*.build_pulled=marduk",
+    "GBP_NOTIFICATIONS_SUBSCRIPTIONS": "*.postpull=marduk",
 }
 
 
