@@ -19,8 +19,8 @@ class WebhookMethod:  # pylint: disable=too-few-public-methods
 
     def send(self, event: Event, recipient: Recipient) -> Any:
         """Send the given Event to the given Recipient"""
-        if body := create_body(event, recipient):
-            worker.run(tasks.send_http_request, recipient.name, body)
+        body = create_body(event, recipient)
+        worker.run(tasks.send_http_request, recipient.name, body)
 
 
 def create_body(event: Event, _recipient: Recipient) -> str:
