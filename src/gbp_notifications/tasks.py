@@ -25,7 +25,7 @@ def send_http_request(recipient_name: str, body: str) -> None:
     # pylint: disable=reimported,import-outside-toplevel,redefined-outer-name,import-self
     import requests
 
-    from gbp_notifications import utils
+    from gbp_notifications import plugin, utils
     from gbp_notifications.methods.email import logger
     from gbp_notifications.settings import Settings
     from gbp_notifications.types import Recipient
@@ -35,6 +35,7 @@ def send_http_request(recipient_name: str, body: str) -> None:
     url, headers = utils.parse_webhook_config(recipient.config["webhook"])
     post = requests.post
     headers["Content-Type"] = "application/json"
+    headers["User-Agent"] = f"{plugin['name']}/{plugin['version']}"
     timeout = settings.REQUESTS_TIMEOUT
 
     logger.info("Sending webook notification to %s", url)

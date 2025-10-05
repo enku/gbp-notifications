@@ -6,7 +6,7 @@
 from gbp_testkit import fixtures as testkit
 from unittest_fixtures import Fixtures, given, where
 
-from gbp_notifications import tasks
+from gbp_notifications import plugin, tasks
 from gbp_notifications.methods import pushover
 from gbp_notifications.settings import Settings
 
@@ -47,7 +47,11 @@ class SendHTTPRequestTests(lib.TestCase):
         requests.post.assert_called_once_with(
             "http://host.invalid/webhook",
             data='{"this": "that"}',
-            headers={"X-Pre-Shared-Key": "1234", "Content-Type": "application/json"},
+            headers={
+                "Content-Type": "application/json",
+                "User-Agent": f"{plugin['name']}/{plugin['version']}",
+                "X-Pre-Shared-Key": "1234",
+            },
             timeout=settings.REQUESTS_TIMEOUT,
         )
 
