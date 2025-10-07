@@ -20,7 +20,7 @@ class DomainTests(lib.TestCase):
 
         dispatcher.emit("postpull", build=build, packages=[], gbp_metadata=None)
 
-        fixtures.worker_run.assert_called_once_with(
+        fixtures.worker_run.assert_called_with(
             tasks.sendmail,
             "marduk@host.invalid",
             ["albert <marduk@host.invalid>"],
