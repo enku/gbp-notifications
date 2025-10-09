@@ -1,5 +1,6 @@
 """Webhook NotificationMethod"""
 
+from dataclasses import asdict
 from typing import Any, cast
 
 import orjson
@@ -8,6 +9,11 @@ from gentoo_build_publisher import worker
 from gbp_notifications import tasks
 from gbp_notifications.settings import Settings
 from gbp_notifications.types import Event, Recipient
+
+dumps = orjson.dumps  # pylint: disable=no-member
+
+# Build fields we want to send in the payload
+WANTED_FIELDS = ("machine", "build_id", "keep", "submitted", "completed", "built")
 
 
 class WebhookMethod:  # pylint: disable=too-few-public-methods
@@ -28,4 +34,11 @@ def create_body(event: Event, _recipient: Recipient) -> str:
 
     Return None if no message could be created for the event/recipient combo.
     """
-    return cast(str, orjson.dumps(event).decode("utf8"))  # pylint: disable=no-member
+    event_dict = asdict(event)
+
+    if build := event_dict["data"].get("build"):
+        # remove logs/notes as they take up way too much payload in the HTTP request
+        build = dict((k, v) for k, v in build.items() if k in WANTED_FIELDS)
+        event_dict["data"]["build"] = build
+
+    return cast(str, dumps(event_dict).decode("utf8"))

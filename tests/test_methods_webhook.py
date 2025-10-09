@@ -48,7 +48,14 @@ class CreateBodyTests(lib.TestCase):
             "name": "postpull",
             "machine": build.machine,
             "data": {
-                "build": {"build_id": build.build_id, "machine": build.machine},
+                "build": {
+                    "build_id": build.build_id,
+                    "built": build.built.isoformat(),
+                    "completed": build.completed.isoformat(),
+                    "keep": build.keep,
+                    "machine": build.machine,
+                    "submitted": build.submitted.isoformat(),
+                },
                 "gbp_metadata": mock.ANY,
             },
         }

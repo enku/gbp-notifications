@@ -87,7 +87,7 @@ def gbp_metadata(fixtures: Fixtures, build_duration: int = 3600) -> GBPMetadata:
     return GBPMetadata(build_duration=build_duration, packages=packages)
 
 
-@fixture(gbp_metadata, testkit.build)
+@fixture(gbp_metadata, build=testkit.build_record)
 def event(fixtures: Fixtures, name: str = "postpull") -> Event:
     return Event(
         name=name,
