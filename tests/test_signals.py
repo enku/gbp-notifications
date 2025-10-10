@@ -91,6 +91,7 @@ class HandlerTests(lib.TestCase):
             path="/path/to/binary.tar.xz",
             repo="gentoo",
             size=120,
+            build=build,
         )
         packages = PackageMetadata(total=1, size=50, built=[package])
         gbp_metadata = GBPMetadata(build_duration=600, packages=packages)

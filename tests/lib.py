@@ -62,8 +62,8 @@ def imports(
         yield imported
 
 
-@fixture()
-def package(_fixtures: Fixtures, **options: Any) -> Package:
+@fixture(testkit.build)
+def package(fixtures: Fixtures, **options: Any) -> Package:
     return Package(
         build_id=1,
         build_time=0,
@@ -71,6 +71,7 @@ def package(_fixtures: Fixtures, **options: Any) -> Package:
         repo="gentoo",
         path="lvm-core/clang/clang-20.1.3-1.gpkg.tar",
         size=238592,
+        build=fixtures.build,
         **options,
     )
 
@@ -87,12 +88,12 @@ def gbp_metadata(fixtures: Fixtures, build_duration: int = 3600) -> GBPMetadata:
     return GBPMetadata(build_duration=build_duration, packages=packages)
 
 
-@fixture(gbp_metadata, build=testkit.build_record)
+@fixture(gbp_metadata, testkit.build_record)
 def event(fixtures: Fixtures, name: str = "postpull") -> Event:
     return Event(
         name=name,
         machine=fixtures.build.machine,
-        data={"build": fixtures.build, "gbp_metadata": fixtures.gbp_metadata},
+        data={"build": fixtures.build_record, "gbp_metadata": fixtures.gbp_metadata},
     )
 
 

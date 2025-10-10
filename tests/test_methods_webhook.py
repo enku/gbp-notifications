@@ -40,7 +40,7 @@ class SendTests(lib.TestCase):
 @given(lib.event, recipient=testkit.patch)
 class CreateBodyTests(lib.TestCase):
     def test(self, fixtures: Fixtures) -> None:
-        build = fixtures.build
+        build = fixtures.build_record
 
         body = webhook.create_body(fixtures.event, fixtures.recipient)
 
