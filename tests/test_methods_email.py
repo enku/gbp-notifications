@@ -34,7 +34,7 @@ class SendTests(lib.TestCase):
 
         self.assertEqual("gbp@host.invalid", msg["from"])
         self.assertEqual("marduk <marduk@host.invalid>", msg["to"])
-        self.assertEqual("Gentoo Build Publisher: postpull", msg["subject"])
+        self.assertEqual("Gentoo Build Publisher: build pulled", msg["subject"])
         fixtures.worker_run.assert_called_once_with(
             tasks.sendmail,
             "gbp@host.invalid",

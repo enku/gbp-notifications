@@ -16,6 +16,11 @@ from gbp_notifications.types import Event, Recipient
 
 logger = logging.getLogger(__name__)
 
+SUBJECT_MAP = {
+    # Event-to-subject map
+    "postpull": "build pulled"
+}
+
 
 class EmailMethod:  # pylint: disable=too-few-public-methods
     """Email NotificationMethod
@@ -49,7 +54,7 @@ class EmailMethod:  # pylint: disable=too-few-public-methods
         """Compose message for the given event"""
         msg = set_headers(
             EmailMessage(),
-            Subject=f"Gentoo Build Publisher: {event.name}",
+            Subject=f"Gentoo Build Publisher: {SUBJECT_MAP.get(event.name, event.name)}",
             From=self.settings.EMAIL_FROM,
             To=f'{recipient.name.replace("_", " ")} <{recipient.config["email"]}>',
         )
