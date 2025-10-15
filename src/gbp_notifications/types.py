@@ -65,7 +65,12 @@ class Recipient:
         recipients: set[Self] = set()
 
         for item in string.split():
-            name, rest = utils.split_string_by(item, ":")
+            try:
+                name, rest = utils.split_string_by(item, ":")
+            except ValueError:
+                # Useless, but I guess legal
+                recipients.add(cls(name=item, config={}))
+                continue
 
             attr_dict: dict[str, str] = {}
             for attrs in rest.split(","):

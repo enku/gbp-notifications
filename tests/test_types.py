@@ -2,7 +2,7 @@
 
 # pylint: disable=missing-docstring
 
-from unittest_fixtures import Fixtures, given, where
+from unittest_fixtures import Fixtures, given, params, where
 
 from gbp_notifications.methods.email import EmailMethod
 from gbp_notifications.settings import Settings
@@ -35,18 +35,6 @@ class RecipientTests(TestCase):
         r = Recipient(name="foo", config={"email": "foo@host.invalid"})
         self.assertEqual(r.methods, (EmailMethod,))
 
-    def test_from_string(self) -> None:
-        s = "bob:email=bob@host.invalid albert:email=marduk@host.invalid"
-
-        result = Recipient.from_string(s)
-
-        expected = (
-            Recipient(name="albert", config={"email": "marduk@host.invalid"}),
-            Recipient(name="bob", config={"email": "bob@host.invalid"}),
-        )
-
-        self.assertEqual(result, expected)
-
     def test_from_name(self) -> None:
         r = Recipient(name="foo")
         settings = Settings(RECIPIENTS=(r,))
@@ -58,3 +46,33 @@ class RecipientTests(TestCase):
 
         with self.assertRaises(LookupError):
             Recipient.from_name("foo", settings)
+
+
+RECIPIENTS = (
+    ("", ()),
+    (":email=bob@host.invalid", (("", (("email", "bob@host.invalid"),)),)),
+    ("bob:email=bob@host.invalid", (("bob", (("email", "bob@host.invalid"),)),)),
+    (
+        "bob:email=bob@host.invalid albert:email=marduk@host.invalid",
+        (
+            ("bob", (("email", "bob@host.invalid"),)),
+            ("albert", (("email", "marduk@host.invalid"),)),
+        ),
+    ),
+    ("bob", (("bob", ()),)),
+    (
+        "bob:email=bob@host.invalid,tel=212-555-1212",
+        (("bob", (("email", "bob@host.invalid"), ("tel", "212-555-1212"))),),
+    ),
+)
+
+
+@params(recipients=RECIPIENTS)
+class RecipientFromStringTests(TestCase):
+    def test(self, fixtures: Fixtures) -> None:
+        string, values = fixtures.recipients
+
+        recipients = Recipient.from_string(string)
+
+        expected = {Recipient(name=v[0], config=dict(v[1])) for v in values}
+        self.assertEqual(set(recipients), expected)
