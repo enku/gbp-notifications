@@ -1,7 +1,6 @@
 """Tests for the signal handlers"""
 
-# pylint: disable=missing-docstring,unused-argument
-import os
+# pylint: disable=missing-docstring
 from unittest import mock
 
 from gbp_testkit import fixtures as testkit
@@ -18,8 +17,6 @@ COMMON_SETTINGS = {
     "GBP_NOTIFICATIONS_RECIPIENTS": "marduk:email=marduk@host.invalid",
 }
 
-environ = os.environ
-
 
 @given(lib.caches, testkit.environ, lib.recipient, testkit.build, lib.event)
 @given(method=testkit.patch)
@@ -27,7 +24,7 @@ environ = os.environ
 @where(method__target="gbp_notifications.methods.email.EmailMethod")
 class HandlerTests(lib.TestCase):
     def test_wildcard_machine(self, fixtures: Fixtures) -> None:
-        environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "*.published=marduk"
+        fixtures.environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "*.published=marduk"
         build = fixtures.build
         event = fixtures.event
         recipient = fixtures.recipient
@@ -37,7 +34,7 @@ class HandlerTests(lib.TestCase):
         fixtures.method.return_value.send.assert_called_once_with(event, recipient)
 
     def test_wildcard_name(self, fixtures: Fixtures) -> None:
-        environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "babette.*=marduk"
+        fixtures.environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "babette.*=marduk"
         build = fixtures.build
         event = fixtures.event
         recipient = fixtures.recipient
@@ -48,7 +45,7 @@ class HandlerTests(lib.TestCase):
 
     def test_wildcard_machine_and_name(self, fixtures: Fixtures) -> None:
         # Multiple matches should only send one message per recipient
-        environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = (
+        fixtures.environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = (
             "babette.*=marduk *.published=marduk"
         )
         build = fixtures.build
@@ -61,7 +58,7 @@ class HandlerTests(lib.TestCase):
 
     def test_wildcard_double(self, fixtures: Fixtures) -> None:
         # Double wildcard is sent exactly once
-        environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "*.*=marduk"
+        fixtures.environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "*.*=marduk"
         build = fixtures.build
         event = fixtures.event
         recipient = fixtures.recipient
@@ -72,7 +69,7 @@ class HandlerTests(lib.TestCase):
 
     def test_sub_when_recipient_does_not_exist(self, fixtures: Fixtures) -> None:
         """When subscription has a non-exisent recipient it doesn't error"""
-        environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "*.*=bogus"
+        fixtures.environ["GBP_NOTIFICATIONS_SUBSCRIPTIONS"] = "*.*=bogus"
         build = fixtures.build
 
         dispatcher.emit("published", build=build)
