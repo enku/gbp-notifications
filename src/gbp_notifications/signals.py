@@ -1,6 +1,6 @@
 """Signal handlers for GBP Notifications"""
 
-import typing as t
+from typing import Any
 
 from gentoo_build_publisher.signals import dispatcher
 from gentoo_build_publisher.types import Build
@@ -16,7 +16,7 @@ class SignalHandler:  # pylint: disable=too-few-public-methods
         self.event_name = event_name
         self.__doc__ = f"SignalHandler for {event_name!r}"
 
-    def __call__(self, *, build: Build, **kwargs: t.Any) -> None:
+    def __call__(self, *, build: Build, **kwargs: Any) -> None:
         """We handle signals"""
         send_event_to_recipients(Event.from_build(self.event_name, build, **kwargs))
 
