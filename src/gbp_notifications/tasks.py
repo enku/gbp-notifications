@@ -1,11 +1,10 @@
 """gbp-notification tasks"""
 
-# pylint: disable=cyclic-import
+# pylint: disable=cyclic-import,import-outside-toplevel
 
 
 def sendmail(from_addr: str, to_addrs: list[str], msg: str) -> None:
     """Worker function to sent the email message"""
-    # pylint: disable=reimported,import-outside-toplevel,redefined-outer-name,import-self
     import smtplib
 
     from gbp_notifications.methods.email import email_password, logger
@@ -22,7 +21,6 @@ def sendmail(from_addr: str, to_addrs: list[str], msg: str) -> None:
 
 def send_http_request(recipient_name: str, body: str) -> None:
     """Worker function to call the webhook"""
-    # pylint: disable=reimported,import-outside-toplevel,redefined-outer-name,import-self
     import requests
 
     from gbp_notifications import plugin, utils
@@ -50,7 +48,6 @@ def send_pushover_notification(device: str, title: str, message: str) -> None:
 
     https://pushover.net/api
     """
-    # pylint: disable=reimported,import-outside-toplevel,redefined-outer-name,import-self
     import requests
 
     from gbp_notifications.methods.pushover import URL
