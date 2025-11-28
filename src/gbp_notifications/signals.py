@@ -9,12 +9,16 @@ from gbp_notifications.settings import Settings
 from gbp_notifications.types import Event, Recipient, Subscription
 
 
-class SignalHandler(t.Protocol):  # pylint: disable=too-few-public-methods
-    """Signal handler function"""
+class SignalHandler:  # pylint: disable=too-few-public-methods
+    """Signal handler callable"""
 
-    @staticmethod
-    def __call__(*, build: Build, **kwargs: t.Any) -> None:
+    def __init__(self, event_name: str) -> None:
+        self.event_name = event_name
+        self.__doc__ = f"SignalHandler for {event_name!r}"
+
+    def __call__(self, *, build: Build, **kwargs: t.Any) -> None:
         """We handle signals"""
+        send_event_to_recipients(Event.from_build(self.event_name, build, **kwargs))
 
 
 class SignalHandlers:  # pylint: disable=too-few-public-methods
@@ -32,7 +36,7 @@ class SignalHandlers:  # pylint: disable=too-few-public-methods
     def bind(self, *signals: str) -> None:
         """Create signal handlers and bind them to the given signals"""
         for signal in signals:
-            handler = get_handler(signal)
+            handler = SignalHandler(signal)
             dispatcher.bind(**{signal: handler})
             setattr(self, signal, handler)
 
@@ -61,16 +65,6 @@ def wildcard_events(event: Event) -> list[Event]:
         Event(name="*", machine=event.machine),
         Event(name=event.name, machine="*"),
     ]
-
-
-def get_handler(event_name: str) -> SignalHandler:
-    """Signal handler factory"""
-
-    def handler(*, build: Build, **kwargs: t.Any) -> None:
-        send_event_to_recipients(Event.from_build(event_name, build, **kwargs))
-
-    handler.__doc__ = f"SignalHandler for {event_name!r}"
-    return handler
 
 
 signal_handlers = SignalHandlers()
