@@ -47,9 +47,8 @@ class SendTests(lib.TestCase):
         fixtures.method.send(event, fixtures.recipient)
 
         fixtures.worker_run.assert_not_called()
-        fixtures.logger.warning.assert_called_once_with(
-            "No template found for event: %s", "bogus"
-        )
+        warning = fixtures.logger.warning
+        warning.assert_called_once_with("No template found for event: %s", "bogus")
 
 
 @given(lib.event, lib.package, lib.recipient)
