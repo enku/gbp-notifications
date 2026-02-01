@@ -61,12 +61,9 @@ class SendHTTPRequestTests(lib.TestCase):
 class SendPushoverNotificationTests(lib.TestCase):
     def test(self, fixtures: Fixtures) -> None:
         settings = Settings.from_environ()
+        args = lib.PUSHOVER_PARAMS
 
-        tasks.send_pushover_notification(
-            lib.PUSHOVER_PARAMS["device"],
-            lib.PUSHOVER_PARAMS["title"],
-            lib.PUSHOVER_PARAMS["message"],
-        )
+        tasks.send_pushover_notification(args["device"], args["title"], args["message"])
 
         requests = fixtures.imports["requests"]
         requests.post.assert_called_once_with(
