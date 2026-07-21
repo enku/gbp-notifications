@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """Run tests for gbp-notifications"""
+
 import argparse
 import os
 import sys
